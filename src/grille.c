@@ -33,13 +33,18 @@ void copie_grille(grille gs, grille gd)
 	return;
 }
 
+// alloue une grille de taille l*c, et initialise toutes les cellules à mortes
 void alloue_grille(int l, int c, grille* g)
 {
-	
+	g->nbc = c;
+	g->nbl = l;
+	for (int i = 0; i < l; ++i) for (int j = 0; j < c; ++j) set_morte(i, j, *g);
 }
 
 // libère une grille
 void libere_grille(grille* g)
 {
-	
+	for (int i = 0; i < g->nbl; ++i)
+		free(g->cellules[i]);
+	free(g->cellules);
 }
