@@ -1,5 +1,7 @@
 # Folders
 bin/
+dist/
+obj/
 
 # Prerequisites
 *.d
