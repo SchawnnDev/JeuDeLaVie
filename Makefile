@@ -18,6 +18,8 @@ jeu.o: $(SDIR)/jeu.c
 	gcc $(CFLAGS) -o $(ODIR)/jeu.o -c $(SDIR)/jeu.c
 io.o: $(SDIR)/io.c
 	gcc $(CFLAGS) -o $(ODIR)/io.o -c $(SDIR)/io.c
+dist:
+	tar -c --lzma -f dist/Meyer-Paul.tar.xz grilles include src Makefile README.md
 clean: 
 	rm -rf $(ODIR)/*.o
 	rm -rf $(BDIR)/*
