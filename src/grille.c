@@ -32,3 +32,14 @@ void copie_grille(grille gs, grille gd)
 	for (i = 0; i < gs.nbl; ++i) for (j = 0; j < gs.nbc; ++j) gd.cellules[i][j] = gs.cellules[i][j];
 	return;
 }
+
+void alloue_grille(int l, int c, grille* g)
+{
+	
+}
+
+// libère une grille
+void libere_grille(grille* g)
+{
+	
+}
