@@ -20,4 +20,4 @@ io.o: $(SDIR)/io.c
 	gcc $(CFLAGS) -o $(ODIR)/io.o -c $(SDIR)/io.c
 clean: 
 	rm -rf $(ODIR)/*.o
-	rm -fc $(BDIR)/*
+	rm -rf $(BDIR)/*
