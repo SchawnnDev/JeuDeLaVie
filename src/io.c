@@ -2,16 +2,14 @@
 
 void affiche_trait(int c)
 {
-	int i;
-	for (i = 0; i < c; ++i) printf("|---");
+	for (int i = 0; i < c; ++i) printf("|---");
 	printf("|\n");
 	return;
 }
 
 void affiche_ligne(int c, int* ligne)
 {
-	int i;
-	for (i = 0; i < c; ++i)
+	for (int i = 0; i < c; ++i)
 		if (ligne[i] == 0) printf("|   ");
 		else printf("| O ");
 	printf("|\n");
@@ -20,10 +18,11 @@ void affiche_ligne(int c, int* ligne)
 
 void affiche_grille(grille g)
 {
-	int i, l = g.nbl, c = g.nbc;
+	const int l = g.nbl;
+	const int c = g.nbc;
 	printf("\n");
 	affiche_trait(c);
-	for (i = 0; i < l; ++i)
+	for (int i = 0; i < l; ++i)
 	{
 		affiche_ligne(c, g.cellules[i]);
 		affiche_trait(c);
@@ -39,7 +38,7 @@ void efface_grille(grille g)
 
 void debut_jeu(grille* g, grille* gc)
 {
-	char c = getchar();
+	char c = (char)getchar();
 	while (c != 'q') // touche 'q' pour quitter
 	{
 		switch (c)
@@ -58,14 +57,16 @@ void debut_jeu(grille* g, grille* gc)
 				printf("Veuillez entrer un nouveau fichier grille:\n");
 				scanf("%s", nom_fichier_grille);
 
-			//	libere_grille(g);
-			//	libere_grille(gc);
-				
-				init_grille_from_file(nom_fichier_grille, g);
-				alloue_grille(g->nbl, g->nbc, gc);
-				affiche_grille(*g);
+				printf("Chargement du fichier %s...\n\n", nom_fichier_grille);
 
-				debut_jeu(g, gc);
+				// liberer la grille
+				libere_grille(g);
+				libere_grille(gc);
+
+				charge_grille(g, gc, nom_fichier_grille);
+
+				printf("\n"); // nouvelle ligne pour eviter que la ligne du bas soit plus petite que les autres
+			
 				return;
 			}
 		default:
@@ -75,7 +76,17 @@ void debut_jeu(grille* g, grille* gc)
 				break;
 			}
 		}
-		c = getchar();
+		c = (char)getchar();
 	}
 	return;
+}
+
+void charge_grille(grille* g, grille* gc, char* nom_fichier_grille)
+{
+	init_grille_from_file(nom_fichier_grille, g);
+	alloue_grille(g->nbl, g->nbc, gc);
+
+	affiche_grille(*g);
+
+	debut_jeu(g, gc);
 }

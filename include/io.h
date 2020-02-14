@@ -20,4 +20,7 @@ void efface_grille(grille g);
 // debute le jeu
 void debut_jeu(grille* g, grille* gc);
 
+// charge une grille dans un fichier
+void charge_grille(grille* g, grille* gc, char* nom_fichier_grille);
+
 #endif
