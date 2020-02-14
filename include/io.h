@@ -1,3 +1,6 @@
+/** @file io.h
+ *	@brief Fonctions pour gérer les entrées et sorties
+ */
 #ifndef __IO_H
 #define __IO_H
 
@@ -5,7 +8,9 @@
 #include "grille.h"
 #include "jeu.h"
 
-// affichage d'un trait horizontal
+/**
+ * <p>affichage d'un trait horizontal</p>
+ */
 void affiche_trait(int c);
 
 // affichage d'une ligne de la grille

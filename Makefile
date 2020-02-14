@@ -25,8 +25,9 @@ io.o: $(SDIR)/io.c
 	gcc $(CFLAGS) -o $(ODIR)/io.o -c $(SDIR)/io.c
 dist:
 	@mkdir -p dist
-	tar -c --lzma -f dist/Meyer-Paul.tar.xz grilles include src Makefile README.md
+	tar -c --lzma -f dist/Meyer-Paul.tar.xz grilles include src Makefile Doxyfile README.md
 clean: 
 	rm -rf $(ODIR)/
 	rm -rf $(BDIR)/
 	rm -rf dist/
+	rm -rf doc/
