@@ -38,7 +38,12 @@ void alloue_grille(int l, int c, grille* g)
 {
 	g->nbc = c;
 	g->nbl = l;
-	for (int i = 0; i < l; ++i) for (int j = 0; j < c; ++j) set_morte(i, j, *g);
+	int** cellules = g->cellules;
+	cellules = (int**) malloc(sizeof(int*) * l);
+	for (int i = 0; i < l; ++i) {
+		cellules[i] = (int*)malloc(sizeof(int*) * c);
+		for (int j = 0; j < c; ++j) set_morte(i, j, *g);
+	}
 }
 
 // libère une grille

@@ -52,6 +52,22 @@ void debut_jeu(grille* g, grille* gc)
 				affiche_grille(*g);
 				break;
 			}
+		case 'n':
+			{
+				char nom_fichier_grille[256];
+				printf("Veuillez entrer un nouveau fichier grille:\n");
+				scanf("%s", nom_fichier_grille);
+
+			//	libere_grille(g);
+			//	libere_grille(gc);
+				
+				init_grille_from_file(nom_fichier_grille, g);
+				alloue_grille(g->nbl, g->nbc, gc);
+				affiche_grille(*g);
+
+				debut_jeu(g, gc);
+				return;
+			}
 		default:
 			{
 				// touche non traitée
