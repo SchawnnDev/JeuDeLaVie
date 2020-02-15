@@ -1,3 +1,7 @@
+﻿/** \file grille.h
+ *	\brief Fonctions pour gérer les grilles de cellules
+ */
+
 #ifndef __GRILLE_H
 #define __GRILLE_H
 
@@ -5,7 +9,12 @@
 #include <stdio.h>
 #include <assert.h>
 
-// structure grille : nombre de lignes, nombre de colonnes, tableau de tableau de cellules
+/**
+ * \struct grille
+ * \brief Objet grille
+ *
+ * Structure de la grille : nombre de lignes, nombre de colonnes, tableau de tableau de cellules
+ */
 typedef struct
 {
 	int nbl;
@@ -13,13 +22,13 @@ typedef struct
 	int** cellules;
 } grille;
 
-// alloue une grille de taille l*c, et initialise toutes les cellules à mortes
+// alloue une grille de taille l*c, et initialise toutes les cellules Ã  mortes
 void alloue_grille(int l, int c, grille* g);
 
 // libère une grille
 void libere_grille(grille* g);
 
-// alloue et initalise la grille g à partir d'un fichier
+// alloue et initalise la grille g Ã  partir d'un fichier
 void init_grille_from_file(char* filename, grille* g);
 
 // rend vivante la cellule (i,j) de la grille g

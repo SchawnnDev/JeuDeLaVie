@@ -1,5 +1,5 @@
-/** @file io.h
- *	@brief Fonctions pour gérer les entrées et sorties
+ï»¿/** \file io.h
+ *	\brief Fonctions pour gÃ©rer les entrÃ©es et sorties
  */
 #ifndef __IO_H
 #define __IO_H
