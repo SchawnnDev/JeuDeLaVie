@@ -31,3 +31,5 @@ clean:
 	rm -rf $(BDIR)/
 	rm -rf dist/
 	rm -rf doc/
+doc:
+	@doxygen
