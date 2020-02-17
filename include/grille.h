@@ -19,7 +19,7 @@ typedef struct
 {
 	int nbl; /*!< Entier représentant le nombre de lignes que contient la grille. */
 	int nbc; /*!< Entier représentant le nombre de colonnes que contient la grille. */
-	int** cellules; /*!< Tableau à deux entrées contenant une valeur pour chaque case de la grille */
+	int** cellules; /*!< Pointeur d'un pointeur sur un tableau à deux entrées contenant une valeur pour chaque case de la grille */
 } grille;
 
 /**
@@ -28,7 +28,7 @@ typedef struct
  *
  * \param l Entier représentant le nombre de lignes que contient la grille.
  * \param c Entier représentant le nombre de colonnes que contient la grille.
- * \param g Objet grille
+ * \param g Pointeur sur la grille concernée
  */
 void alloue_grille(int l, int c, grille* g);
 
@@ -36,7 +36,7 @@ void alloue_grille(int l, int c, grille* g);
  * \fn void libere_grille (grille* g)
  * \brief Libère la grille g.
  *
- * \param g Objet grille
+ * \param g Pointeur sur la grille concernée
  */
 void libere_grille(grille* g);
 
@@ -44,8 +44,8 @@ void libere_grille(grille* g);
  * \fn void init_grille_from_file(char* filename, grille* g)
  * \brief Initialise une grille en chargeant un fichier grille.txt
  *
- * \param filename Nom du fichier contenant des informations sur une grille
- * \param g Objet grille
+ * \param filename Pointeur sur une chaîne contenant le nom du fichier de la grille
+ * \param g Pointeur sur la grille concernée
  */
 void init_grille_from_file(char* filename, grille* g);
 
@@ -55,7 +55,7 @@ void init_grille_from_file(char* filename, grille* g);
  *
  * \param i Entier représentant le numéro de la ligne de la cellule
  * \param j Entier représentant le numéro de la colonne de la cellule
- * \param g Objet grille
+ * \param g Grille concernée
  */
 static inline void set_vivante(int i, int j, grille g) { g.cellules[i][j] = 1; }
 
@@ -65,7 +65,7 @@ static inline void set_vivante(int i, int j, grille g) { g.cellules[i][j] = 1; }
  *
  * \param i Entier représentant le numéro de la ligne de la cellule
  * \param j Entier représentant le numéro de la colonne de la cellule
- * \param g Objet grille
+ * \param g Grille concernée
  */
 static inline void set_morte(int i, int j, grille g) { g.cellules[i][j] = 0; }
 
@@ -75,7 +75,7 @@ static inline void set_morte(int i, int j, grille g) { g.cellules[i][j] = 0; }
  *
  * \param i Entier représentant le numéro de la ligne de la cellule
  * \param j Entier représentant le numéro de la colonne de la cellule
- * \param g Objet grille
+ * \param g Grille concernée
  *
  * \return Retourne un entier 1 si la cellule est vivante et un 0 si elle ne l'est pas
  */
