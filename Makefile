@@ -3,6 +3,7 @@ SDIR=src
 ODIR=obj
 BDIR=bin
 IDIR=include
+VER=1.0
 
 # Compile flags -> Iinclude pour les fichiers .h
 CFLAGS= -Wall -Iinclude
@@ -25,7 +26,7 @@ io.o: $(SDIR)/io.c
 	gcc $(CFLAGS) -o $(ODIR)/io.o -c $(SDIR)/io.c
 dist:
 	@mkdir -p dist
-	tar -c --lzma -f dist/Meyer-Paul.tar.xz grilles include src Makefile Doxyfile README.md
+	tar -c --lzma -f dist/MeyerPaul-GoL-$(VER).tar.xz grilles include src Makefile Doxyfile README.md
 clean: 
 	rm -rf $(ODIR)/
 	rm -rf $(BDIR)/

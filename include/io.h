@@ -31,8 +31,9 @@ void affiche_ligne(int c, int* ligne);
  * \brief Affichage d'une grille
  *
  * \param g Objet grille que l'on souhaite afficher
+ * \param tempsEvolution Le temps d'évolution de la grille
  */
-void affiche_grille(grille g);
+void affiche_grille(grille g, int tempsEvolution);
 
 /**
  * \fn void efface_grille(grille g)
@@ -50,15 +51,5 @@ void efface_grille(grille g);
  * \param gc Pointeur sur une seconde grill qui contient l'évolution de la première grille
  */
 void debut_jeu(grille* g, grille* gc);
-
-/**
- * \fn void charge_grille(grille* g, grille* gc, char* nom_fichier_grille)
- * \brief Charge une grille dans un fichier
- *
- * \param g Pointeur sur la grille dans laquelle doit être chargé les informations que contient le fichier nom_fichier_grille
- * \param gc Pointeur sur une seconde grille qui contient le même nombre de colonnes et lignes que la première grille et qui servira d'évolution de la première grille
- * \param nom_fichier_grille Nom du fichier contenant des informations sur une grille
- */
-void charge_grille(grille* g, grille* gc, char* nom_fichier_grille);
 
 #endif

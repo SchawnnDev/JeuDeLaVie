@@ -16,10 +16,11 @@ void affiche_ligne(int c, int* ligne)
 	return;
 }
 
-void affiche_grille(grille g)
+void affiche_grille(grille g, int tempsEvolution)
 {
 	const int l = g.nbl;
 	const int c = g.nbc;
+	printf("Temps d'évolution: %d", tempsEvolution);
 	printf("\n");
 	affiche_trait(c);
 	for (int i = 0; i < l; ++i)
@@ -38,7 +39,11 @@ void efface_grille(grille g)
 
 void debut_jeu(grille* g, grille* gc)
 {
+	// variables
 	char c = (char)getchar();
+	int tempsEvolution = 1;
+	bool voisinageCyclique = false;
+
 	while (c != 'q') // touche 'q' pour quitter
 	{
 		switch (c)
@@ -46,9 +51,10 @@ void debut_jeu(grille* g, grille* gc)
 		case '\n':
 			{
 				// touche "entree" pour évoluer
+				tempsEvolution++;
 				evolue(g, gc);
 				efface_grille(*g);
-				affiche_grille(*g);
+				affiche_grille(*g, tempsEvolution);
 				break;
 			}
 		case 'n':
@@ -62,8 +68,14 @@ void debut_jeu(grille* g, grille* gc)
 				// liberer la grille
 				libere_grille(g);
 				libere_grille(gc);
+				// mettre à 1 le temps d'évolution
+				tempsEvolution = 1;
 
-				charge_grille(g, gc, nom_fichier_grille);
+				// charger & démarrer le jeu
+				init_grille_from_file(nom_fichier_grille, g);
+				alloue_grille(g->nbl, g->nbc, gc);
+				affiche_grille(*g, 1);
+				debut_jeu(g, gc);
 
 				printf("\n"); // nouvelle ligne pour eviter que la ligne du bas soit plus petite que les autres
 			
@@ -79,14 +91,4 @@ void debut_jeu(grille* g, grille* gc)
 		c = (char)getchar();
 	}
 	return;
-}
-
-void charge_grille(grille* g, grille* gc, char* nom_fichier_grille)
-{
-	init_grille_from_file(nom_fichier_grille, g);
-	alloue_grille(g->nbl, g->nbc, gc);
-
-	affiche_grille(*g);
-
-	debut_jeu(g, gc);
 }

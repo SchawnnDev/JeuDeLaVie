@@ -14,15 +14,13 @@ int main(int argc, char** argv)
 
 	grille g, gc;
 
-	charge_grille(&g, &gc, argv[1]);
-
-	/*
+	// charger & démarrer le jeu
 	init_grille_from_file(argv[1], &g);
 	alloue_grille(g.nbl, g.nbc, &gc);
-	affiche_grille(g);
-
+	affiche_grille(g, 1);
 	debut_jeu(&g, &gc);
-	*/
+
+	// libérer la mémoire
 	libere_grille(&g);
 	libere_grille(&gc);
 	return 0;
