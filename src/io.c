@@ -16,11 +16,15 @@ void affiche_ligne(int c, int* ligne)
 	return;
 }
 
-void affiche_grille(grille g, int tempsEvolution)
+void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique)
 {
 	const int l = g.nbl;
 	const int c = g.nbc;
+	char* cycliqueStr = voisinageCyclique ? "Activé" : "Désactivé";
+	printf("\e[K");
 	printf("Temps d'évolution: %d", tempsEvolution);
+	printf(" | ");
+	printf("Voisinage cyclique : %s", cycliqueStr);
 	printf("\n");
 	affiche_trait(c);
 	for (int i = 0; i < l; ++i)
@@ -29,6 +33,7 @@ void affiche_grille(grille g, int tempsEvolution)
 		affiche_trait(c);
 	}
 	printf("\n");
+	printf("\e[K");
 	return;
 }
 
@@ -42,7 +47,8 @@ void debut_jeu(grille* g, grille* gc)
 	// variables
 	char c = (char)getchar();
 	int tempsEvolution = 1;
-	bool voisinageCyclique = false;
+	int voisinageCyclique = 0;
+	int (*compte_voisins_vivants) (int, int, grille) = _;
 
 	while (c != 'q') // touche 'q' pour quitter
 	{
@@ -54,7 +60,7 @@ void debut_jeu(grille* g, grille* gc)
 				tempsEvolution++;
 				evolue(g, gc);
 				efface_grille(*g);
-				affiche_grille(*g, tempsEvolution);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique);
 				break;
 			}
 		case 'n':
@@ -68,18 +74,22 @@ void debut_jeu(grille* g, grille* gc)
 				// liberer la grille
 				libere_grille(g);
 				libere_grille(gc);
-				// mettre à 1 le temps d'évolution
-				tempsEvolution = 1;
 
 				// charger & démarrer le jeu
 				init_grille_from_file(nom_fichier_grille, g);
 				alloue_grille(g->nbl, g->nbc, gc);
-				affiche_grille(*g, 1);
+				affiche_grille(*g, 1, voisinageCyclique);
 				debut_jeu(g, gc);
 
 				printf("\n"); // nouvelle ligne pour eviter que la ligne du bas soit plus petite que les autres
 			
 				return;
+			}
+		case 'c':
+			{
+				voisinageCyclique = !voisinageCyclique;
+			
+				break;
 			}
 		default:
 			{

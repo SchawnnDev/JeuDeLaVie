@@ -32,8 +32,9 @@ void affiche_ligne(int c, int* ligne);
  *
  * \param g Objet grille que l'on souhaite afficher
  * \param tempsEvolution Le temps d'évolution de la grille
+ * \param voisinageCyclique Activer ou désactiver le voisinage cyclique
  */
-void affiche_grille(grille g, int tempsEvolution);
+void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique);
 
 /**
  * \fn void efface_grille(grille g)
