@@ -1,4 +1,7 @@
-﻿#ifndef __JEU_H
+﻿/** \file jeu.h
+ *	\brief Fonctions pour gérer le jeu
+ */
+#ifndef __JEU_H
 #define __JEU_H
 
 #include "grille.h"
