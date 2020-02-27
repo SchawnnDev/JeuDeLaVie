@@ -23,8 +23,9 @@ void affiche_trait(int c);
  *
  * \param c Entier représentant le nombre de colonnes de longueur qu'aura la ligne
  * \param ligne Poiteur sur un tableau d'entier contenant l'état des cellules de la ligne
+ * \param vieillissement Affiche ou non l'age des cellules
  */
-void affiche_ligne(int c, int* ligne);
+void affiche_ligne(int c, int* ligne, int vieillissement);
 
 /**
  * \fn void affiche_grille(grille g)
@@ -33,8 +34,9 @@ void affiche_ligne(int c, int* ligne);
  * \param g Objet grille que l'on souhaite afficher
  * \param tempsEvolution Le temps d'évolution de la grille
  * \param voisinageCyclique Activer ou désactiver le voisinage cyclique
+ * \param vieillissement Affiche ou non l'age des cellules
  */
-void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique);
+void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement);
 
 /**
  * \fn void efface_grille(grille g)
