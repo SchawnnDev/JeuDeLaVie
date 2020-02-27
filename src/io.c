@@ -47,8 +47,8 @@ void debut_jeu(grille* g, grille* gc)
 	// variables
 	char c = (char)getchar();
 	int tempsEvolution = 1;
-	int voisinageCyclique = 0;
-	int (*compte_voisins_vivants) (int, int, grille) = _;
+	int voisinageCyclique = 1;
+	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
 
 	while (c != 'q') // touche 'q' pour quitter
 	{
@@ -58,7 +58,7 @@ void debut_jeu(grille* g, grille* gc)
 			{
 				// touche "entree" pour évoluer
 				tempsEvolution++;
-				evolue(g, gc);
+				evolue(g, gc, compte_voisins_vivants);
 				efface_grille(*g);
 				affiche_grille(*g, tempsEvolution, voisinageCyclique);
 				break;
@@ -82,13 +82,15 @@ void debut_jeu(grille* g, grille* gc)
 				debut_jeu(g, gc);
 
 				printf("\n"); // nouvelle ligne pour eviter que la ligne du bas soit plus petite que les autres
-			
+
 				return;
 			}
 		case 'c':
 			{
 				voisinageCyclique = !voisinageCyclique;
-			
+				if (voisinageCyclique) compte_voisins_vivants = compte_voisins_vivants_cyclique;
+				else compte_voisins_vivants = compte_voisins_vivants_non_cyclique;
+
 				break;
 			}
 		default:

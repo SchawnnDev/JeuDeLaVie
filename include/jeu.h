@@ -18,22 +18,33 @@
 static inline int modulo(int i, int m) { return (i + m) % m; }
 
 /**
- * \fn void compte_voisins_vivants(int i, int j, grille g)
- * \brief Compte le nombre de voisins vivants de la cellule (i,j) (les bords sont cycliques.
+ * \fn void compte_voisins_vivants_cyclique(int i, int j, grille g)
+ * \brief Compte le nombre de voisins vivants de la cellule (i,j) (les bords sont cycliques.)
  *
  * \param l Entier représentant le nombre de lignes que contient la grille.
  * \param c Entier représentant le nombre de colonnes que contient la grille.
  * \param g Grille concernée
  */
-int compte_voisins_vivants(int i, int j, grille g);
+int compte_voisins_vivants_cyclique(int i, int j, grille g);
 
 /**
- * \fn void evolue(grille* g, grille* gc)
+ * \fn void compte_voisins_vivants_non_cyclique(int i, int j, grille g)
+ * \brief Compte le nombre de voisins vivants de la cellule (i,j) (les bords sont non cycliques.)
+ *
+ * \param l Entier représentant le nombre de lignes que contient la grille.
+ * \param c Entier représentant le nombre de colonnes que contient la grille.
+ * \param g Grille concernée
+ */
+int compte_voisins_vivants_non_cyclique(int i, int j, grille g);
+
+/**
+ * \fn void evolue(grille* g, grille* gc, int (*compte_voisins_vivants) (int, int, grille))
  * \brief Fait évoluer la grille g d'un pas de temps
  *
  * \param g Pointeur sur la grille principal de l'état actuel
  * \param gc Pointeur sur une seconde grille qui contiendra l'évolution de g
+ * \param compte_voisins_vivants Fonction de calcul des voisins vivants (cyclique ou non cyclique)
  */
-void evolue(grille* g, grille* gc);
+void evolue(grille* g, grille* gc, int (*compte_voisins_vivants) (int, int, grille));
 
 #endif

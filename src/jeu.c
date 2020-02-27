@@ -1,6 +1,6 @@
 #include "jeu.h"
 
-int compte_voisins_vivants(int i, int j, grille g)
+int compte_voisins_vivants_cyclique(int i, int j, grille g)
 {
 	int v = 0, l = g.nbl, c = g.nbc;
 	v += est_vivante(modulo(i - 1, l), modulo(j - 1, c), g);
@@ -15,7 +15,23 @@ int compte_voisins_vivants(int i, int j, grille g)
 	return v;
 }
 
-void evolue(grille* g, grille* gc)
+int compte_voisins_vivants_non_cyclique(int i, int j, grille g)
+{
+	int v = 0, l = g.nbl, c = g.nbc;
+
+	v += (i - 1 >= 0 && j - 1 >= 0) ? est_vivante(i - 1, j - 1, g) : 0;
+	v += (i - 1 >= 0) ? est_vivante(i - 1, j, g) : 0;
+	v += (i - 1 >= 0 && j + 1 < c) ? est_vivante(i - 1, j + 1, g) : 0;
+	v += (j - 1 >= 0) ? est_vivante(i, j - 1, g) : 0;
+	v += (j + 1 < c) ? est_vivante(i, j + 1, g) : 0;
+	v += (i + 1 < l && j - 1 >= 0) ? est_vivante(i + 1, j - 1, g) : 0;
+	v += (i + 1 < l) ? est_vivante(i + 1, j, g) : 0;
+	v += (i + 1 < l && j + 1 < c) ? est_vivante(i + 1, j + 1, g) : 0;
+
+	return v;
+}
+
+void evolue(grille* g, grille* gc, int (*compte_voisins_vivants)(int, int, grille))
 {
 	copie_grille(*g, *gc); // copie temporaire de la grille
 	int i, j, l = g->nbl, c = g->nbc, v;

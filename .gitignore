@@ -3,6 +3,7 @@ bin/
 dist/
 obj/
 doc/
+.vs/
 
 # Prerequisites
 *.d
