@@ -77,3 +77,6 @@ Lorsque l'application est démarrée il est possible d’exécuter des commandes
 - n => Changer de grille
 - q => Quitter le programme
 
+### Evolution
+
+Pour faire évoluer les cellules, il suffit d'appuyer sur la touche entrée. 
