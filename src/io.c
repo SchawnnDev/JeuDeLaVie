@@ -12,16 +12,9 @@ void affiche_ligne(int c, int* ligne, int vieillissement)
 	for (int i = 0; i < c; ++i)
 	{
 
-		if(!vieillissement)
-		{
-			if (ligne[i] == 0) printf("|   ");
-			else printf("| O ");
-			continue;
-		}
-
 		if (ligne[i] == 0 ) printf ("|   ");
-		else if (ligne[i] == -1) printf("| X "); // La cellule est non-viable
-		else printf ("| %d ", ligne[i]);
+		else if (vieillissement) printf ("| %d ", ligne[i]);
+		else printf ("| 0 ");
 	}
 		
 	printf("|\n");
@@ -33,11 +26,15 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 	const int l = g.nbl;
 	const int c = g.nbc;
 	char* cycliqueStr = voisinageCyclique ? "Activé" : "Désactivé";
+	char* vieillissementStr = vieillissement ? "Activé" : "Désactivé";
+	printf("\n");
 	printf("\e[K");
 	printf("Temps d'évolution: %d", tempsEvolution);
 	printf(" | ");
-	printf("Voisinage cyclique : %s", cycliqueStr);
-	printf("\n");
+	printf("Voisinage cyclique: %s", cycliqueStr);
+	printf(" | ");
+	printf("Vieillissement: %s", vieillissementStr);
+	printf("\n\n");
 	affiche_trait(c);
 	for (int i = 0; i < l; ++i)
 	{
@@ -45,13 +42,12 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 		affiche_trait(c);
 	}
 	printf("\n");
-	printf("\e[K");
 	return;
 }
 
 void efface_grille(grille g)
 {
-	printf("\n\e[%dA", g.nbl * 2 + 5);
+	printf("\n\e[%dA", g.nbl * 2 + 7);
 }
 
 void debut_jeu(grille* g, grille* gc)
@@ -83,7 +79,8 @@ void debut_jeu(grille* g, grille* gc)
 				scanf("%s", nom_fichier_grille);
 
 				printf("Chargement du fichier %s...\n\n", nom_fichier_grille);
-
+				// reset le temps
+				tempsEvolution = 1;
 				// liberer la grille
 				libere_grille(g);
 				libere_grille(gc);
@@ -100,15 +97,25 @@ void debut_jeu(grille* g, grille* gc)
 			}
 		case 'c':
 			{
+
 				voisinageCyclique = !voisinageCyclique;
-				if (voisinageCyclique) compte_voisins_vivants = compte_voisins_vivants_cyclique;
-				else compte_voisins_vivants = compte_voisins_vivants_non_cyclique;
+				compte_voisins_vivants = voisinageCyclique ? &(compte_voisins_vivants_cyclique) : &(compte_voisins_vivants_non_cyclique);
+
+				efface_grille(*g);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				printf("\e[K");
+				printf("\n");
 
 				break;
 			}
 		case 'v':
-			vieillissement = !vieillissement;
-			printf("\n\e[1A");
+				vieillissement = !vieillissement;
+				//printf("\n\e[1A");
+				efface_grille(*g);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				//printf("\e[A");
+				printf("\e[K");
+				printf("\n");
 			break;
 		default:
 			{

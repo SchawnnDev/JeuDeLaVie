@@ -79,7 +79,7 @@ static inline void set_morte(int i, int j, grille g) { g.cellules[i][j] = 0; }
  *
  * \return Retourne un entier 1 si la cellule est vivante et un 0 si elle ne l'est pas
  */
-static inline int est_vivante(int i, int j, grille g) { return g.cellules[i][j] == 1; }
+static inline int est_vivante(int i, int j, grille g) { return g.cellules[i][j] >= 1; }
 
 /**
  * \fn void copie_grille(grille gs, grille gd)
