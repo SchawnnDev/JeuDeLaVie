@@ -72,6 +72,8 @@ Le programme a pour arguments, le nom du fichier de la grille, il suffit donc d'
 ### Commandes
 Lorsque l'application est démarrée il est possible d’exécuter des commandes.
 
+- c => Activer/désactiver le comptage cyclique
+- v => Activer/désactiver le vieillissement
 - n => Changer de grille
 - q => Quitter le programme
 
