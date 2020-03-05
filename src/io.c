@@ -54,6 +54,7 @@ void debut_jeu(grille* g, grille* gc)
 {
 	// variables
 	char c = (char)getchar();
+	int skip = 0;
 	int tempsEvolution = 1;
 	int voisinageCyclique = 1;
 	int vieillissement = 0;
@@ -65,6 +66,11 @@ void debut_jeu(grille* g, grille* gc)
 		{
 		case '\n':
 			{
+				if(skip)
+				{
+					skip = !skip;
+					break;
+				}
 				// touche "entree" pour évoluer
 				tempsEvolution++;
 				evolue(g, gc, compte_voisins_vivants, vieillissement);
@@ -89,11 +95,11 @@ void debut_jeu(grille* g, grille* gc)
 				init_grille_from_file(nom_fichier_grille, g);
 				alloue_grille(g->nbl, g->nbc, gc);
 				affiche_grille(*g, 1, voisinageCyclique, vieillissement);
-				debut_jeu(g, gc);
-
+				//debut_jeu(g, gc);
+				skip = 1; // eviter d'evoluer a la prochaine action
+				printf("\n\e[2A");
 				printf("\n"); // nouvelle ligne pour eviter que la ligne du bas soit plus petite que les autres
-
-				return;
+				break;
 			}
 		case 'c':
 			{
