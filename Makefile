@@ -3,7 +3,7 @@ SDIR=src
 ODIR=obj
 BDIR=bin
 IDIR=include
-VER=1.0
+VER=2.0
 
 # Compile flags -> Iinclude pour les fichiers .h
 CFLAGS= -Wall -Iinclude
@@ -34,3 +34,10 @@ clean:
 	rm -rf doc/
 doc:
 	@doxygen
+help:
+	@echo "======== Help Jeu de la Vie $(VER) ========"
+	@echo "make: compiler le programme"
+	@echo "make clean: effacer les fichiers générés"
+	@echo "make dist: créer une archive du projet"
+	@echo "make doc: générér la documentation doxygen"
+	@echo "make help: afficher l'aide"
