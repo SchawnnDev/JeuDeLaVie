@@ -4,8 +4,8 @@
 #include <cairo-xlib.h>
 #include <X11/Xlib.h>
 
-#define SIZEX 100
-#define SIZEY 100
+#define SIZEX 1000
+#define SIZEY 600
 
 #include "grille.h"
 #include "io.h"
@@ -18,18 +18,27 @@ void paint(cairo_surface_t* surface)
 	cr = cairo_create(surface);
 
 	// background
-	cairo_set_source_rgb(cr, 0.0, 0.0, 1.0);
+	cairo_set_source_rgb(cr, 5, 220.0, 220.0); // gainsboro
 	cairo_paint(cr);
 
 	// line
-	cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+	cairo_set_source_rgb(cr,255.0, 0.0, 0.0);
 	cairo_move_to(cr, 10.0, 50.0);
 	cairo_line_to(cr, 100.0, 50.0);
 	cairo_set_line_width(cr, 1);
 	cairo_stroke(cr);
 
+	// text
+
+	cairo_select_font_face(cr, "serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+	cairo_set_font_size(cr, 32.0);
+	cairo_set_source_rgb(cr, 0.0, 0.0, 1.0);
+	cairo_move_to(cr, 10.0, 50.0);
+	cairo_show_text(cr, "Hello, world");
+
+
 	// filled rectangle
-	cairo_rectangle(cr, 30, 30, 50, 50);
+	cairo_rectangle(cr, 30, 30, 100, 50);
 	cairo_set_source_rgb(cr, 0.0, 1.0, 0.0);
 	cairo_fill(cr);
 
@@ -74,7 +83,7 @@ int main(int argc, char** argv)
 		win = XCreateSimpleWindow(dpy, rootwin, 1, 1, SIZEX, SIZEY, 0,
 			BlackPixel(dpy, scr), BlackPixel(dpy, scr));
 
-		XStoreName(dpy, win, "jeu de la vie");
+		XStoreName(dpy, win, "Jeu de la vie");
 		XSelectInput(dpy, win, ExposureMask | ButtonPressMask);
 		XMapWindow(dpy, win);
 
