@@ -3,7 +3,7 @@ SDIR=src
 ODIR=obj
 BDIR=bin
 IDIR=include
-VER=2.0
+VER=3.0
 
 # Compile flags -> Iinclude pour les fichiers .h
 CFLAGS= -Wall -Iinclude
