@@ -4,6 +4,7 @@ ODIR=obj
 BDIR=bin
 IDIR=include
 VER=4.0
+MODE=CAIRO
 
 # -> Iinclude pour les fichiers .h
 CPPFLAGS += -Iinclude -I/usr/include/cairo
@@ -20,11 +21,11 @@ vpath %.o $(ODIR)
 # Instructions
 main: main.o grille.o jeu.o io.o
 	@mkdir -p $(BDIR)
-	gcc $(CFLAGS) -o $(BDIR)/main $(ODIR)/main.o $(ODIR)/grille.o $(ODIR)/jeu.o $(ODIR)/io.o $(LDFLAGS)
+	gcc -DMODE$(MODE) $(CFLAGS) -o $(BDIR)/main $(ODIR)/main.o $(ODIR)/grille.o $(ODIR)/jeu.o $(ODIR)/io.o $(LDFLAGS)
 
 %.o: %.c
 	@mkdir -p $(ODIR)
-	gcc $(CFLAGS) -o $(ODIR)/$@ -c $<
+	gcc -DMODE$(MODE) $(CFLAGS) -o $(ODIR)/$@ -c $<
 
 dist:
 	@mkdir -p dist

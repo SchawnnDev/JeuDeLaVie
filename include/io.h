@@ -8,6 +8,13 @@
 #include "grille.h"
 #include "jeu.h"
 
+#if MODECAIRO
+
+	#define SIZEX 1000
+	#define SIZEY 600
+
+#else
+
 /**
  * \fn void affiche_trait(int c)
  * \brief Affichage d'un trait horizontal
@@ -55,4 +62,5 @@ void efface_grille(grille g);
  */
 void debut_jeu(grille* g, grille* gc);
 
+#endif
 #endif
