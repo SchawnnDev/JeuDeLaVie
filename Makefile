@@ -3,15 +3,19 @@ SDIR=src
 ODIR=obj
 BDIR=bin
 IDIR=include
-VER=3.0
+VER=4.0
 
-# Compile flags -> Iinclude pour les fichiers .h
-CFLAGS= -Wall -Iinclude
+# -> Iinclude pour les fichiers .h
+CPPFLAGS += -Iinclude -I/usr/include/cairo
+LDFLAGS += -lcairo -lm -lX11
+
+# Compile flags 
+CFLAGS= $(CPPFLAGS) -Wall
 
 # Instructions
 main: main.o grille.o jeu.o io.o
 	@mkdir -p bin
-	gcc $(CFLAGS) -o $(BDIR)/main $(ODIR)/main.o $(ODIR)/grille.o $(ODIR)/jeu.o $(ODIR)/io.o
+	gcc $(CFLAGS) -o $(BDIR)/main $(ODIR)/main.o $(ODIR)/grille.o $(ODIR)/jeu.o $(ODIR)/io.o $(LDFLAGS)
 main.o: $(SDIR)/main.c
 	@mkdir -p obj
 	gcc $(CFLAGS) -o $(ODIR)/main.o -c $(SDIR)/main.c
