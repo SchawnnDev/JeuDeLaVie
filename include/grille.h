@@ -70,6 +70,14 @@ static inline void set_vivante(int i, int j, grille g) { g.cellules[i][j] = 1; }
 static inline void set_morte(int i, int j, grille g) { g.cellules[i][j] = 0; }
 
 /**
+ * Rend non-viable la cellule (i,j) de la grille g
+ * @param[in]  i Ligne de la cellule
+ * @param[in]  j Colonne de la cellule
+ * @param[out] g Grille
+ */
+static inline void set_non_viable(int i, int j, grille g) { g.cellules[i][j] = -1; }
+
+/**
  * \fn static inline int est_vivante(int i, int j, grille g)
  * \brief Teste si la cellule (i,j) de la grille g est vivante
  *
@@ -80,6 +88,18 @@ static inline void set_morte(int i, int j, grille g) { g.cellules[i][j] = 0; }
  * \return Retourne un entier 1 si la cellule est vivante et un 0 si elle ne l'est pas
  */
 static inline int est_vivante(int i, int j, grille g) { return g.cellules[i][j] >= 1; }
+
+/**
+ * \fn static inline int est_viable(int i, int j, grille g)
+ * \brief Teste si la cellule (i,j) de la grille g est viable
+ *
+ * \param i Entier représentant le numéro de la ligne de la cellule
+ * \param j Entier représentant le numéro de la colonne de la cellule
+ * \param g Grille concernée
+ *
+ * \return Retourne un entier 1 si la cellule est viable et un 0 si elle ne l'est pas
+ */
+static inline int est_non_viable(int i, int j, grille g) { return g.cellules[i][j] == -1; }
 
 /**
  * \fn void copie_grille(grille gs, grille gd)

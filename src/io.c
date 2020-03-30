@@ -13,6 +13,7 @@ void affiche_ligne(int c, int* ligne, int vieillissement)
 	{
 
 		if (ligne[i] == 0 ) printf ("|   ");
+		else if (ligne[i] == -1) printf("| X "); // Non-viable
 		else if (vieillissement) printf ("| %d ", ligne[i]);
 		else printf ("| 0 ");
 	}

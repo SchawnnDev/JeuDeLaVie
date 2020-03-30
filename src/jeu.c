@@ -39,6 +39,10 @@ void evolue(grille *g, grille *gc, int (*compte_voisins_vivants)(int, int, grill
 	{
 		for (j = 0; j < c; ++j)
 		{
+
+			if (est_non_viable(i, j, *g))
+				continue;
+			
 			v = compte_voisins_vivants(i, j, *gc);
 			if (est_vivante(i, j, *g))
 			{
