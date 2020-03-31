@@ -5,6 +5,8 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 // pour le tableau
 #define CELL_WIDTH 30
 #define CELL_HEIGHT 30
@@ -13,26 +15,69 @@
 #define LINE_WIDTH 1
 
 extern cairo_surface_t* c_surface;
+XClassHint *classHint;
+
+cairo_surface_t* cairo_create_x11_surface0(int x, int y)
+{
+	Display* dsp;
+	Drawable da;
+	int screen;
+	cairo_surface_t* sfc;
+
+	if ((dsp = XOpenDisplay(NULL)) == NULL)
+		exit(1);
+	screen = DefaultScreen(dsp);
+	da = XCreateSimpleWindow(dsp, DefaultRootWindow(dsp), 0, 0, x, y, 0, 0, 0);
+	XSelectInput(dsp, da, ButtonPressMask | KeyPressMask);
+	XMapWindow(dsp, da);
+
+	classHint = XAllocClassHint();
+	if (classHint) {
+		classHint->res_name = "Jeu de la vie";
+		classHint->res_class = "Jeu de la vie";
+		XSetClassHint(dsp, da, classHint);
+		XFree(classHint);
+	}
+
+	sfc = cairo_xlib_surface_create(dsp, da, DefaultVisual(dsp, screen), x, y);
+	cairo_xlib_surface_set_size(sfc, x, y);
+
+	return sfc;
+}
+
+void cairo_close_x11_surface(cairo_surface_t* sfc)
+{
+	Display* dsp = cairo_xlib_surface_get_display(sfc);
+
+	cairo_surface_destroy(sfc);
+	XCloseDisplay(dsp);
+}
 
 void affiche_trait(int c)
 {
-	// trait vertical donc variation de X
-	cairo_set_source_rgb(c_surface, 1.0, 0.0, 0.0);
-	cairo_move_to(c_surface, LEFT_MARGIN, TOP_MARGIN * c);
-	cairo_line_to(c_surface, LEFT_MARGIN + c * CELL_WIDTH, TOP_MARGIN * c);
-	cairo_set_line_width(c_surface, 1);
-	cairo_stroke(c_surface);
+	cairo_t* cr;
+	cr = cairo_create(c_surface);
+	// trait horizontal donc variation de X
+	cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN * c);
+	cairo_line_to(cr, LEFT_MARGIN + c * CELL_WIDTH, TOP_MARGIN * c);
+	cairo_set_line_width(cr, 2);
+	cairo_stroke(cr);
+	cairo_destroy(cr);
 }
 
 
 void affiche_ligne(int c, int* ligne, int vieillissement)
 {
-	// trait vertical donc variation de X
-	cairo_set_source_rgb(c_surface, 1.0, 0.0, 0.0);
-	cairo_move_to(c_surface, LEFT_MARGIN * c, TOP_MARGIN);
-	cairo_line_to(c_surface, LEFT_MARGIN * c, TOP_MARGIN + c * CELL_HEIGHT);
-	cairo_set_line_width(c_surface, 1);
-	cairo_stroke(c_surface);
+	cairo_t* cr;
+	cr = cairo_create(c_surface);
+	// trait vertical donc variation de Y
+	cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+	cairo_move_to(cr, LEFT_MARGIN * c, TOP_MARGIN);
+	cairo_line_to(cr, LEFT_MARGIN * c, TOP_MARGIN + c * CELL_HEIGHT);
+	cairo_set_line_width(cr, 1);
+	cairo_stroke(cr);
+	cairo_destroy(cr);
 }
 
 void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement)
@@ -77,12 +122,13 @@ void debut_jeu(grille* g, grille* gc)
 	int voisinageCyclique = 1;
 	int vieillissement = 0;
 	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
-
+	XEvent e;
+	
 	// run the event loop
 	while (1) {
-		XNextEvent(dpy, &e);
+		XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
 		if (e.type == Expose && e.xexpose.count < 1) {
-			paint(c_surface);
+			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
 		}
 		else if (e.type == ButtonPress)
 		{

@@ -10,8 +10,28 @@
 
 #if MODECAIRO
 
+#include <cairo.h>
+#include <cairo-xlib.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 	#define SIZEX 1000
 	#define SIZEY 600
+
+ /*
+  * Sources: https://www.cypherpunk.at/files/2014/11/cairo_xlib_simple.c
+  *
+  *! Ouvre une fenêtre X11 ete crée la surface de base cairo sur cette fenêtre
+  * @param x Largeur de la fenêtre
+  * @param y Hauteur de la fênetre
+  * @return Retourne un pointeur vers une surface Xlib cairo valid.
+  */
+cairo_surface_t* cairo_create_x11_surface0(int x, int y);
+
+/*! Destroy cairo Xlib surface and close X connection.
+ * Detruit la surface cairo XLib et ferme la connection X.
+ */
+void cairo_close_x11_surface();
 
 #else
 

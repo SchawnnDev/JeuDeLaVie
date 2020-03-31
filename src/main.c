@@ -8,43 +8,11 @@
 #include "io.h"
 #include "jeu.h"
 
+#if MODECAIRO
+
 cairo_surface_t* c_surface;
 
-/*
-void paint(cairo_surface_t* surface)
-{
-	// create cairo mask
-	cairo_t* cr;
-	cr = cairo_create(surface);
-
-	// background
-	cairo_set_source_rgb(cr, 5, 220.0, 220.0); // gainsboro
-	cairo_paint(cr);
-
-	// line
-	cairo_set_source_rgb(cr,255.0, 0.0, 0.0);
-	cairo_move_to(cr, 10.0, 50.0);
-	cairo_line_to(cr, 100.0, 50.0);
-	cairo_set_line_width(cr, 1);
-	cairo_stroke(cr);
-
-	// text
-
-	cairo_select_font_face(cr, "serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-	cairo_set_font_size(cr, 32.0);
-	cairo_set_source_rgb(cr, 0.0, 0.0, 1.0);
-	cairo_move_to(cr, 10.0, 50.0);
-	cairo_show_text(cr, "Hello, world");
-
-
-	// filled rectangle
-	cairo_rectangle(cr, 30, 30, 100, 50);
-	cairo_set_source_rgb(cr, 0.0, 1.0, 0.0);
-	cairo_fill(cr);
-
-	cairo_destroy(cr); // destroy cairo mask
-} */
-
+#endif
 
 int main(int argc, char** argv)
 {
@@ -64,35 +32,8 @@ int main(int argc, char** argv)
 
 	#define SIZEX 1000
 	#define SIZEY 600
-	
-		// X11 display
-		Display* dpy;
-		Window rootwin;
-		Window win;
-		XEvent e;
-		int scr;
-
-		printf("Cairo mode\n");
-
-		// init the display
-		if (!(dpy = XOpenDisplay(NULL))) {
-			fprintf(stderr, "ERROR: Could not open display\n");
-			exit(1);
-		}
-
-		scr = DefaultScreen(dpy);
-		rootwin = RootWindow(dpy, scr);
-
-		win = XCreateSimpleWindow(dpy, rootwin, 1, 1, SIZEX, SIZEY, 0,
-			BlackPixel(dpy, scr), BlackPixel(dpy, scr));
-
-		XStoreName(dpy, win, "Jeu de la vie");
-		XSelectInput(dpy, win, ExposureMask | ButtonPressMask);
-		XMapWindow(dpy, win);
-
-		// create cairo surface
 		
-		c_surface = cairo_xlib_surface_create(dpy, win, DefaultVisual(dpy, 0), SIZEX, SIZEY);
+		c_surface = cairo_create_x11_surface0(SIZEX, SIZEY);
 #endif
 
 	alloue_grille(g.nbl, g.nbc, &gc);
@@ -104,7 +45,7 @@ int main(int argc, char** argv)
 	libere_grille(&gc);
 
 #if MODECAIRO
-	XCloseDisplay(dpy); // close the display
+	XCloseDisplay(cairo_xlib_surface_get_display(c_surface)); // close the display
 #endif
 	return 0;
 }
