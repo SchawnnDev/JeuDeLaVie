@@ -30,7 +30,7 @@ cairo_surface_t* cairo_create_x11_surface0(int x, int y)
 	// screen par defaut
 	screen = DefaultScreen(dsp);
 	// tester avec des pixels blancs
-	da = XCreateSimpleWindow(dsp, DefaultRootWindow(dsp), 1, 1, x, y, 0, WhitePixel(dsp, screen), WhitePixel(dsp, screen));
+	da = XCreateSimpleWindow(dsp, DefaultRootWindow(dsp), 1, 1, x, y, 0, 0x1, 0x1);
 	XSelectInput(dsp, da, ExposureMask | ButtonPressMask | KeyPressMask);
 	XMapWindow(dsp, da);
 
@@ -63,7 +63,7 @@ void affiche_trait(int c)
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
 	// trait horizontal donc variation de X
-	cairo_set_source_rgb(cr, 0.5554, 0.0, 0.5544554);
+	cairo_set_source_rgb(cr, 0.5554, 0.542, 0.5544554);
 	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN * c);
 	cairo_line_to(cr, LEFT_MARGIN + c * CELL_WIDTH, TOP_MARGIN * c);
 	cairo_set_line_width(cr, 2);
@@ -118,7 +118,7 @@ void efface_grille(grille g)
 {
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
-	cairo_set_source_rgb(cr,1.0, 1.0, 1.0);
+	cairo_set_source_rgb(cr, 0.115, 0.87, 0.41);
 	cairo_paint(cr);
 	cairo_destroy(cr);
 }
@@ -133,7 +133,6 @@ void debut_jeu(grille* g, grille* gc)
 	int voisinageCyclique = 1;
 	int vieillissement = 0;
 	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
-	cairo_t* cr = cairo_create(c_surface);
 	XEvent e;
 
 	printf("test\n");
@@ -141,16 +140,15 @@ void debut_jeu(grille* g, grille* gc)
 	// run the event loop
 	while (1) {
 		// Clear the background
-		cairo_set_source_rgb(cr, 0, 0, 0);
-		cairo_paint(cr);
+		efface_grille(*g);
 		
 		XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
 		printf("%d\n", e.xkey.keycode);
-		printf("ButtonPress = %d", ButtonPress);
+		printf("ButtonPress = %d", KeyPress);
 		if (e.type == Expose && e.xexpose.count < 1) {
 			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
 		}
-		else if (e.type == ButtonPress)
+		else if (e.type == KeyPress)
 		{
 
 			if(e.xkey.keycode == 36) // touche entrée
