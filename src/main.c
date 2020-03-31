@@ -26,6 +26,7 @@ int main(int argc, char** argv)
 
 	// charger & démarrer le jeu
 	init_grille_from_file(argv[1], &g);
+	alloue_grille(g.nbl, g.nbc, &gc);
 
 
 #if MODECAIRO
@@ -34,10 +35,14 @@ int main(int argc, char** argv)
 	#define SIZEY 600
 		
 		c_surface = cairo_create_x11_surface0(SIZEX, SIZEY);
+		
+#else 
+
+
+	affiche_grille(g, 1, 1, 0);
+
 #endif
 
-	alloue_grille(g.nbl, g.nbc, &gc);
-	affiche_grille(g, 1, 1, 0);
 	debut_jeu(&g, &gc);
 
 	// libérer la mémoire
@@ -45,7 +50,7 @@ int main(int argc, char** argv)
 	libere_grille(&gc);
 
 #if MODECAIRO
-	XCloseDisplay(cairo_xlib_surface_get_display(c_surface)); // close the display
+	cairo_close_x11_surface(c_surface);// close the display
 #endif
 	return 0;
 }

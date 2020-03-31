@@ -26,9 +26,12 @@ cairo_surface_t* cairo_create_x11_surface0(int x, int y)
 
 	if ((dsp = XOpenDisplay(NULL)) == NULL)
 		exit(1);
+
+	// screen par defaut
 	screen = DefaultScreen(dsp);
-	da = XCreateSimpleWindow(dsp, DefaultRootWindow(dsp), 0, 0, x, y, 0, 0, 0);
-	XSelectInput(dsp, da, ButtonPressMask | KeyPressMask);
+	// tester avec des pixels blancs
+	da = XCreateSimpleWindow(dsp, DefaultRootWindow(dsp), 1, 1, x, y, 0, WhitePixel(dsp, screen), WhitePixel(dsp, screen));
+	XSelectInput(dsp, da, ExposureMask | ButtonPressMask | KeyPressMask);
 	XMapWindow(dsp, da);
 
 	classHint = XAllocClassHint();
@@ -39,6 +42,9 @@ cairo_surface_t* cairo_create_x11_surface0(int x, int y)
 		XFree(classHint);
 	}
 
+	// ajouter le nom
+	XStoreName(dsp, da, "Jeu de la vie");
+
 	sfc = cairo_xlib_surface_create(dsp, da, DefaultVisual(dsp, screen), x, y);
 	cairo_xlib_surface_set_size(sfc, x, y);
 
@@ -48,7 +54,6 @@ cairo_surface_t* cairo_create_x11_surface0(int x, int y)
 void cairo_close_x11_surface(cairo_surface_t* sfc)
 {
 	Display* dsp = cairo_xlib_surface_get_display(sfc);
-
 	cairo_surface_destroy(sfc);
 	XCloseDisplay(dsp);
 }
@@ -58,7 +63,7 @@ void affiche_trait(int c)
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
 	// trait horizontal donc variation de X
-	cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+	cairo_set_source_rgb(cr, 0.5554, 0.0, 0.5544554);
 	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN * c);
 	cairo_line_to(cr, LEFT_MARGIN + c * CELL_WIDTH, TOP_MARGIN * c);
 	cairo_set_line_width(cr, 2);
@@ -72,10 +77,10 @@ void affiche_ligne(int c, int* ligne, int vieillissement)
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
 	// trait vertical donc variation de Y
-	cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+	cairo_set_source_rgb(cr, 0.2445, 0.5544554, 0.5544554);
 	cairo_move_to(cr, LEFT_MARGIN * c, TOP_MARGIN);
 	cairo_line_to(cr, LEFT_MARGIN * c, TOP_MARGIN + c * CELL_HEIGHT);
-	cairo_set_line_width(cr, 1);
+	cairo_set_line_width(cr, 2);
 	cairo_stroke(cr);
 	cairo_destroy(cr);
 }
@@ -84,16 +89,21 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 {
 	const int l = g.nbl;
 	const int c = g.nbc;
-	char* cycliqueStr = voisinageCyclique ? "Activé" : "Désactivé";
-	char* vieillissementStr = vieillissement ? "Activé" : "Désactivé";
-	printf("\n");
-	printf("\e[K");
-	printf("Temps d'évolution: %d", tempsEvolution);
-	printf(" | ");
-	printf("Voisinage cyclique: %s", cycliqueStr);
-	printf(" | ");
-	printf("Vieillissement: %s", vieillissementStr);
-	printf("\n\n");
+
+	cairo_t* cr;
+	cr = cairo_create(c_surface);
+
+	cairo_set_source_rgb(cr, 0.2445, 0.5544554, 0.5544554);
+	cairo_select_font_face(cr, "Arial Rounded MT Bold",
+		CAIRO_FONT_SLANT_NORMAL,
+		CAIRO_FONT_WEIGHT_BOLD);
+
+	cairo_set_font_size(cr, 20);
+	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN);
+	cairo_show_text(cr, "Jeu de la Vie");
+	
+	cairo_destroy(cr);
+	
 	affiche_trait(c);
 	for (int i = 1; i <= l; ++i)
 	{
@@ -115,18 +125,28 @@ void efface_grille(grille g)
 
 void debut_jeu(grille* g, grille* gc)
 {
+
+	printf("je teste\n");
 	// variables
-	char c = (char)getchar();
 	int skip = 0;
 	int tempsEvolution = 1;
 	int voisinageCyclique = 1;
 	int vieillissement = 0;
 	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
+	cairo_t* cr = cairo_create(c_surface);
 	XEvent e;
+
+	printf("test\n");
 	
 	// run the event loop
 	while (1) {
+		// Clear the background
+		cairo_set_source_rgb(cr, 0, 0, 0);
+		cairo_paint(cr);
+		
 		XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
+		printf("%d\n", e.xkey.keycode);
+		printf("ButtonPress = %d", ButtonPress);
 		if (e.type == Expose && e.xexpose.count < 1) {
 			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
 		}
@@ -139,6 +159,7 @@ void debut_jeu(grille* g, grille* gc)
 				evolue(g, gc, compte_voisins_vivants, vieillissement);
 				efface_grille(*g);
 				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				printf("Entree\n");
 			} else
 			{
 				break;
@@ -147,7 +168,7 @@ void debut_jeu(grille* g, grille* gc)
 		}
 	}
 
-	cairo_surface_destroy(c_surface); // destroy cairo surface
+	//cairo_surface_destroy(c_surface); // destroy cairo surface
 	/*
 	while (c != 'q') // touche 'q' pour quitter
 	{
