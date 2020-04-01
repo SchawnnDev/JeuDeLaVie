@@ -136,10 +136,10 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 			CAIRO_FONT_SLANT_NORMAL,
 			CAIRO_FONT_WEIGHT_BOLD);
 
-		cairo_set_font_size(cr, 20);
+		cairo_set_font_size(cr, 30);
 
 	}
-		
+
 	for(int i = 0; i < l ; ++i) // lignes
 	{
 		int* ligne = g.cellules[i];
@@ -180,7 +180,7 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 				cairo_move_to(cr, LEFT_MARGIN + (j + 0.5) * cellWidth, TOP_MARGIN + (i + 0.5) * cellHeight);
 
 				// converter int to string
-				char str[1];
+				char str[12];
 				sprintf(str, "%d", ligne[j]);
 				cairo_show_text(cr, str);
 				continue;
@@ -212,6 +212,7 @@ void debut_jeu(grille* g, grille* gc)
 	int voisinageCyclique = 1;
 	int vieillissement = 0;
 	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
+	Display* const dsp = cairo_xlib_surface_get_display(c_surface);
 	XEvent e;
 	
 	// run the event loop
@@ -222,103 +223,60 @@ void debut_jeu(grille* g, grille* gc)
 		// Clear the background
 		
 		XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
+		
 		if (e.type == Expose && e.xexpose.count < 1) {
 			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
-		}
-		else if (e.type == KeyPress)
-		{
-			printf("Key = %d", e.xkey.keycode);
-			if(e.xkey.keycode == 36) // touche entrée
-			{
+		} else if (e.type == ButtonPress) {
+
+			if (e.xbutton.button == 1) {
 				tempsEvolution++;
 				evolue(g, gc, compte_voisins_vivants, vieillissement);
 				efface_grille(*g);
 				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
-			} else if(e.xkey.keycode == 56) // touche v
+			} else if (e.xbutton.button == 3) {
+				break; // on stoppe l'application
+			}
+			
+		} else if (e.type == KeyPress)
+		{
+
+			if (e.xkey.keycode == XKeysymToKeycode(dsp, 'v')) // touche v
 			{
 				vieillissement = !vieillissement;
 				efface_grille(*g);
 				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
-			} else
+			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'c')) // touche c
 			{
-				break;
+				voisinageCyclique = !voisinageCyclique;
+				compte_voisins_vivants = voisinageCyclique
+					? &(compte_voisins_vivants_cyclique)
+					: &(compte_voisins_vivants_non_cyclique);
+
+				efface_grille(*g);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'n')) // touche n
+			{
+				char nom_fichier_grille[256];
+				printf("Veuillez entrer un nouveau fichier grille:\n");
+				scanf("%s", nom_fichier_grille);
+
+				printf("Chargement du fichier %s...\n\n", nom_fichier_grille);
+				// reset le temps
+				tempsEvolution = 1;
+				// liberer la grille
+				libere_grille(g);
+				libere_grille(gc);
+
+				// charger & démarrer le jeu
+				init_grille_from_file(nom_fichier_grille, g);
+				alloue_grille(g->nbl, g->nbc, gc);
+				affiche_grille(*g, 1, voisinageCyclique, vieillissement);
+				//debut_jeu(g, gc);
 			}
 			
 		}
 	}
 
-	//cairo_surface_destroy(c_surface); // destroy cairo surface
-	/*
-	while (c != 'q') // touche 'q' pour quitter
-	{
-		switch (c)
-		{
-		case '\n':
-		{
-			if (skip)
-			{
-				skip = !skip;
-				break;
-			}
-			// touche "entree" pour évoluer
-
-			break;
-		}
-		case 'n':
-		{
-			char nom_fichier_grille[256];
-			printf("Veuillez entrer un nouveau fichier grille:\n");
-			scanf("%s", nom_fichier_grille);
-
-			printf("Chargement du fichier %s...\n\n", nom_fichier_grille);
-			// reset le temps
-			tempsEvolution = 1;
-			// liberer la grille
-			libere_grille(g);
-			libere_grille(gc);
-
-			// charger & démarrer le jeu
-			init_grille_from_file(nom_fichier_grille, g);
-			alloue_grille(g->nbl, g->nbc, gc);
-			affiche_grille(*g, 1, voisinageCyclique, vieillissement);
-			//debut_jeu(g, gc);
-			skip = 1; // eviter d'evoluer a la prochaine action
-			printf("\n\e[2A");
-			printf("\n"); // nouvelle ligne pour eviter que la ligne du bas soit plus petite que les autres
-			break;
-		}
-		case 'c':
-		{
-			voisinageCyclique = !voisinageCyclique;
-			compte_voisins_vivants = voisinageCyclique
-				? &(compte_voisins_vivants_cyclique)
-				: &(compte_voisins_vivants_non_cyclique);
-
-			efface_grille(*g);
-			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
-			printf("\e[K");
-			printf("\n");
-
-			break;
-		}
-		case 'v':
-			vieillissement = !vieillissement;
-			//printf("\n\e[1A");
-			efface_grille(*g);
-			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
-			//printf("\e[A");
-			printf("\e[K");
-			printf("\n");
-			break;
-		default:
-		{
-			// touche non traitée
-			printf("\n\e[1A");
-			break;
-		}
-		}
-		c = (char)getchar();
-	}*/
 	return;
 }
 
@@ -329,7 +287,6 @@ void affiche_trait(int c)
 {
 	for (int i = 0; i < c; ++i) printf("|---");
 	printf("|\n");
-	return;
 }
 
 void affiche_ligne(int c, int* ligne, int vieillissement)
@@ -343,7 +300,6 @@ void affiche_ligne(int c, int* ligne, int vieillissement)
 	}
 
 	printf("|\n");
-	return;
 }
 
 void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement)
@@ -367,7 +323,6 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 		affiche_trait(c);
 	}
 	printf("\n");
-	return;
 }
 
 void efface_grille(grille g)
@@ -458,7 +413,6 @@ void debut_jeu(grille* g, grille* gc)
 		}
 		c = (char)getchar();
 	}
-	return;
 }
 
 # endif
