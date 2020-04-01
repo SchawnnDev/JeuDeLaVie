@@ -8,11 +8,11 @@
 #include <X11/Xutil.h>
 
 // pour le tableau
-#define CELL_WIDTH 60
-#define CELL_HEIGHT 60
 #define LEFT_MARGIN 30
 #define TOP_MARGIN 30
-#define LINE_WIDTH 1
+#define LINE_WIDTH 2
+#define TABLE_WIDTH 450
+#define TABLE_HEIGHT 400
 
 extern cairo_surface_t* c_surface;
 XClassHint *classHint;
@@ -25,8 +25,10 @@ cairo_surface_t* cairo_create_x11_surface0(int x, int y)
 	cairo_surface_t* sfc;
 
 	if ((dsp = XOpenDisplay(NULL)) == NULL)
+	{
+		printf("Cant open display\n");
 		exit(1);
-
+	}
 	// screen par defaut
 	screen = DefaultScreen(dsp);
 	// tester avec des pixels blancs
@@ -58,43 +60,40 @@ void cairo_close_x11_surface(cairo_surface_t* sfc)
 	XCloseDisplay(dsp);
 }
 
-void affiche_trait(int c)
+void affiche_trait(int c, double cellHeight)
 {
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
 	// trait horizontal donc variation de X
 	cairo_set_source_rgb(cr, 0.5554, 0.542, 0.9);
-
-	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN + CELL_HEIGHT * i);
-	cairo_line_to(cr, LEFT_MARGIN + c * CELL_WIDTH, TOP_MARGIN + CELL_HEIGHT * i);
-	cairo_set_line_width(cr, 2);
+	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN + cellHeight * c);
+	cairo_line_to(cr, LEFT_MARGIN + TABLE_WIDTH, TOP_MARGIN + cellHeight * c);
+	cairo_set_line_width(cr, LINE_WIDTH);
 	cairo_stroke(cr);
 	
 	cairo_destroy(cr);
 }
 
-
-void affiche_ligne(int c, int max, int* ligne, int vieillissement)
+void affiche_ligne(int c, double cellWidth)
 {
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
 	// trait vertical donc variation de Y
 	cairo_set_source_rgb(cr, 0.2445, 0.5544554, 0.5544554);
+		
+	// ajout des cases
 
-
-	cairo_move_to(cr, LEFT_MARGIN + CELL_WIDTH * c, TOP_MARGIN);
-	cairo_line_to(cr, LEFT_MARGIN + CELL_WIDTH * c, TOP_MARGIN + max * CELL_HEIGHT);
-	cairo_set_line_width(cr, 2);
+	cairo_move_to(cr, LEFT_MARGIN + c * cellWidth, TOP_MARGIN);
+	cairo_line_to(cr, LEFT_MARGIN + c * cellWidth, TOP_MARGIN + TABLE_HEIGHT);
+	cairo_set_line_width(cr, LINE_WIDTH);
 	cairo_stroke(cr);
-	
-
 	cairo_destroy(cr);
 }
 
 void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement)
 {
-	const int l = g.nbl;
-	const int c = g.nbc;
+	const int l = g.nbl; // nombre de cases horizontales
+	const int c = g.nbc; // nombre de cases verticales
 
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
@@ -107,17 +106,91 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 	cairo_set_font_size(cr, 20);
 	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN - 10);
 	cairo_show_text(cr, "Jeu de la Vie");
-	
-	cairo_destroy(cr);
 
+	const double cellHeight = (double)TABLE_HEIGHT / (double)l;
+	const double cellWidth = (double)TABLE_WIDTH / (double)c;
+
+	// affichage des lignes
 	
-	affiche_trait(c);
+	for (int i = 0; i <= l ; ++i)
+		affiche_trait(i, cellHeight);
+
+	for (int i = 0; i <= c; ++i)
+		affiche_ligne(i, cellWidth);
+
+	// affichage des grilles
 	
-	for (int i = 1; i <= l; ++i)
+	cairo_t* cr_grilles;
+	cr_grilles = cairo_create(c_surface);
+	// trait vertical donc variation de Y
+	cairo_set_source_rgb(cr_grilles, 0.2445, 0.5544554, 0.5544554);
+
+
+	// valeurs pour texte si vieillissement
+
+	if (vieillissement)
 	{
-		affiche_ligne(i, g.cellules[i], vieillissement);
+
+		cairo_set_source_rgb(cr, 0.14, 0.4, 0.8);
+		cairo_select_font_face(cr, "Arial",
+			CAIRO_FONT_SLANT_NORMAL,
+			CAIRO_FONT_WEIGHT_BOLD);
+
+		cairo_set_font_size(cr, 20);
+
 	}
-	printf("\n");
+		
+	for(int i = 0; i < l ; ++i) // lignes
+	{
+		int* ligne = g.cellules[i];
+		
+		for (int j = 0; j < c; ++j) // colonnes
+		{
+
+			// ne rien afficher
+			if (ligne[j] == 0) continue;
+
+			if (ligne[j] == -1)
+			{
+				// dessiner un X
+
+				// diagonale 1
+				cairo_move_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - i * cellWidth, TOP_MARGIN + TABLE_HEIGHT - j * cellHeight);
+				cairo_line_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - (i + 1) * cellWidth, TOP_MARGIN + TABLE_HEIGHT - (j + 1) * cellHeight);
+				cairo_set_line_width(cr_grilles, LINE_WIDTH);
+				cairo_stroke(cr_grilles);
+
+				// diagonale 2
+				cairo_move_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - (i + 1) * cellWidth, TOP_MARGIN + TABLE_HEIGHT - j * cellHeight);
+				cairo_line_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - i * cellWidth, TOP_MARGIN + TABLE_HEIGHT - (j + 1) * cellHeight);
+				cairo_set_line_width(cr_grilles, LINE_WIDTH);
+				cairo_stroke(cr_grilles);
+
+				continue;
+			}
+
+			cairo_rectangle(cr_grilles, LEFT_MARGIN + j * cellWidth, TOP_MARGIN + i * cellHeight, cellWidth, cellHeight);
+			cairo_set_source_rgb(cr_grilles, 0.2445, 0.5544554, 0.5544554);
+			cairo_fill(cr_grilles);
+
+			if (vieillissement)
+			{ // afficher chiffres
+				cairo_set_font_size(cr, 10);
+				// on ajoute 0.5 pour atteindre la moitié
+				cairo_move_to(cr, LEFT_MARGIN + (j + 0.5) * cellWidth, TOP_MARGIN + (i + 0.5) * cellHeight);
+
+				// converter int to string
+				char str[1];
+				sprintf(str, "%d", ligne[j]);
+				cairo_show_text(cr, str);
+				continue;
+			}
+
+		}
+	}
+
+	cairo_destroy(cr_grilles);
+	cairo_destroy(cr);
 	return;
 }
 
@@ -133,7 +206,6 @@ void efface_grille(grille g)
 void debut_jeu(grille* g, grille* gc)
 {
 
-	printf("je teste\n");
 	// variables
 	int skip = 0;
 	int tempsEvolution = 1;
@@ -141,31 +213,32 @@ void debut_jeu(grille* g, grille* gc)
 	int vieillissement = 0;
 	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
 	XEvent e;
-
-	printf("test\n");
 	
 	// run the event loop
+	efface_grille(*g);
+	affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+	
 	while (1) {
 		// Clear the background
-		efface_grille(*g);
-		affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
 		
 		XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
-		printf("%d\n", e.xkey.keycode);
-		printf("ButtonPress = %d", KeyPress);
 		if (e.type == Expose && e.xexpose.count < 1) {
 			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
 		}
 		else if (e.type == KeyPress)
 		{
-
+			printf("Key = %d", e.xkey.keycode);
 			if(e.xkey.keycode == 36) // touche entrée
 			{
 				tempsEvolution++;
 				evolue(g, gc, compte_voisins_vivants, vieillissement);
 				efface_grille(*g);
 				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
-				printf("Entree\n");
+			} else if(e.xkey.keycode == 56) // touche v
+			{
+				vieillissement = !vieillissement;
+				efface_grille(*g);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
 			} else
 			{
 				break;

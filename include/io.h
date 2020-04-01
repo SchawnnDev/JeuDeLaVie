@@ -39,7 +39,7 @@ void cairo_close_x11_surface();
  *
  * \param c Entier représentant le nombre de colonnes de longueur qu'aura le trait horizontal
  */
-void affiche_trait(int c);
+void affiche_trait(int c, double cellHeight);
 
 // 
 /**
@@ -50,44 +50,17 @@ void affiche_trait(int c);
  * \param ligne Poiteur sur un tableau d'entier contenant l'état des cellules de la ligne
  * \param vieillissement Affiche ou non l'age des cellules
  */
-void affiche_ligne(int c, int l, int* ligne, int vieillissement);
+void affiche_ligne(int c, double cellWidth);
 
-/**
- * \fn void affiche_grille(grille g)
- * \brief Affichage d'une grille
- *
- * \param g Objet grille que l'on souhaite afficher
- * \param tempsEvolution Le temps d'évolution de la grille
- * \param voisinageCyclique Activer ou désactiver le voisinage cyclique
- * \param vieillissement Affiche ou non l'age des cellules
- */
-void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement);
-
-/**
- * \fn void efface_grille(grille g)
- * \brief Effacement d'une grille
- *
- * \param g Objet grille que l'on souhaite effacer
- */
-void efface_grille(grille g);
-
-/**
- * \fn void debut_jeu(grille* g, grille* gc)
- * \brief Démarrer le jeu
- *
- * \param g Pointeur sur la grille principale
- * \param gc Pointeur sur une seconde grill qui contient l'évolution de la première grille
- */
-void debut_jeu(grille* g, grille* gc);
 
 #else
 
-/**
- * \fn void affiche_trait(int c)
- * \brief Affichage d'un trait horizontal
- *
- * \param c Entier représentant le nombre de colonnes de longueur qu'aura le trait horizontal
- */
+ /**
+  * \fn void affiche_trait(int c)
+  * \brief Affichage d'un trait horizontal
+  *
+  * \param c Entier représentant le nombre de colonnes de longueur qu'aura le trait horizontal
+  */
 void affiche_trait(int c);
 
 // 
@@ -101,6 +74,7 @@ void affiche_trait(int c);
  */
 void affiche_ligne(int c, int* ligne, int vieillissement);
 
+#endif
 /**
  * \fn void affiche_grille(grille g)
  * \brief Affichage d'une grille
@@ -129,5 +103,5 @@ void efface_grille(grille g);
  */
 void debut_jeu(grille* g, grille* gc);
 
-#endif
+
 #endif

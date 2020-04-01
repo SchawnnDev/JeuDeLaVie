@@ -33,16 +33,13 @@ int main(int argc, char** argv)
 
 	#define SIZEX 1000
 	#define SIZEY 600
+
+	printf("Creating surface\n");
 		
 		c_surface = cairo_create_x11_surface0(SIZEX, SIZEY);
-		
-#else 
-
-
-	affiche_grille(g, 1, 1, 0);
-
 #endif
 
+	affiche_grille(g, 1, 1, 0);
 	debut_jeu(&g, &gc);
 
 	// libérer la mémoire
