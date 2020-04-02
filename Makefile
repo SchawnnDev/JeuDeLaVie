@@ -3,12 +3,13 @@ SDIR=src
 ODIR=obj
 BDIR=bin
 IDIR=include
+LDIR=lib
 VER=4.0
 MODE=CAIRO
 
 # -> Iinclude pour les fichiers .h
 CPPFLAGS += -Iinclude -I/usr/include/cairo
-LDFLAGS += -lcairo -lm -lX11
+LDFLAGS += -ljeu -L lib/ -lcairo -lm -lX11
 
 # Compile flags 
 CFLAGS= $(CPPFLAGS) -Wall
@@ -21,7 +22,13 @@ vpath %.o $(ODIR)
 # Instructions
 main: main.o grille.o jeu.o io.o
 	@mkdir -p $(BDIR)
+	@mkdir -p $(LDIR)
+
+	ar -crv $(LDIR)/libjeu.a $(ODIR)/jeu.o $(ODIR)/grille.o
+	ranlib $(LDIR)/libjeu.a
+
 	gcc -DMODE$(MODE) $(CFLAGS) -o $(BDIR)/main $(ODIR)/main.o $(ODIR)/grille.o $(ODIR)/jeu.o $(ODIR)/io.o $(LDFLAGS)
+
 	rm -rf $(ODIR)/
 
 %.o: %.c
@@ -32,7 +39,8 @@ dist:
 	@mkdir -p dist
 	tar -c --lzma -f dist/MeyerPaul-GoL-$(VER).tar.xz grilles include src Makefile Doxyfile README.md
 
-clean: 
+clean:
+	rm -rf $(LDIR)/
 	rm -rf $(ODIR)/
 	rm -rf $(BDIR)/
 	rm -rf dist/
