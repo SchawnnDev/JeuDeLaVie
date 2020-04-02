@@ -2,14 +2,16 @@
 
 #if MODECAIRO // ici on stocke les fonctions utiles a cairo
 
+#include <string.h>
 #include <cairo.h>
 #include <cairo-xlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/keysym.h>
 
 // pour le tableau
 #define LEFT_MARGIN 30
-#define TOP_MARGIN 30
+#define TOP_MARGIN 50
 #define LINE_WIDTH 2
 #define TABLE_WIDTH 450
 #define TABLE_HEIGHT 400
@@ -90,22 +92,13 @@ void affiche_ligne(int c, double cellWidth)
 	cairo_destroy(cr);
 }
 
-void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement)
+void affiche_grille(grille g, int vieillissement)
 {
 	const int l = g.nbl; // nombre de cases horizontales
 	const int c = g.nbc; // nombre de cases verticales
 
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
-
-	cairo_set_source_rgb(cr, 0.2445, 0.5544554, 0.5544554);
-	cairo_select_font_face(cr, "Arial Rounded MT Bold",
-		CAIRO_FONT_SLANT_NORMAL,
-		CAIRO_FONT_WEIGHT_BOLD);
-
-	cairo_set_font_size(cr, 20);
-	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN - 10);
-	cairo_show_text(cr, "Jeu de la Vie");
 
 	const double cellHeight = (double)TABLE_HEIGHT / (double)l;
 	const double cellWidth = (double)TABLE_WIDTH / (double)c;
@@ -155,14 +148,14 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 				// dessiner un X
 
 				// diagonale 1
-				cairo_move_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - i * cellWidth, TOP_MARGIN + TABLE_HEIGHT - j * cellHeight);
-				cairo_line_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - (i + 1) * cellWidth, TOP_MARGIN + TABLE_HEIGHT - (j + 1) * cellHeight);
+				cairo_move_to(cr_grilles, LEFT_MARGIN +  j * cellWidth, TOP_MARGIN + i * cellHeight);
+				cairo_line_to(cr_grilles, LEFT_MARGIN + (j + 1) * cellWidth, TOP_MARGIN + (i + 1) * cellHeight);
 				cairo_set_line_width(cr_grilles, LINE_WIDTH);
 				cairo_stroke(cr_grilles);
 
 				// diagonale 2
-				cairo_move_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - (i + 1) * cellWidth, TOP_MARGIN + TABLE_HEIGHT - j * cellHeight);
-				cairo_line_to(cr_grilles, LEFT_MARGIN + TABLE_WIDTH - i * cellWidth, TOP_MARGIN + TABLE_HEIGHT - (j + 1) * cellHeight);
+				cairo_move_to(cr_grilles, LEFT_MARGIN + (j + 1) * cellWidth, TOP_MARGIN + i * cellHeight);
+				cairo_line_to(cr_grilles, LEFT_MARGIN + j * cellWidth, TOP_MARGIN + (i + 1) * cellHeight);
 				cairo_set_line_width(cr_grilles, LINE_WIDTH);
 				cairo_stroke(cr_grilles);
 
@@ -194,6 +187,79 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 	return;
 }
 
+void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement)
+{
+	cairo_t* cr;
+	cr = cairo_create(c_surface);
+	cairo_set_source_rgb(cr, 0.2445, 0.0544554, 0.5544554);
+	//cairo_set_source_rgb(cr, 0.2445, 0.5544554, 0.5544554);
+	cairo_select_font_face(cr, "Arial",
+		CAIRO_FONT_SLANT_NORMAL,
+		CAIRO_FONT_WEIGHT_BOLD);
+
+	cairo_set_font_size(cr, 30);
+	cairo_move_to(cr, LEFT_MARGIN, TOP_MARGIN - 18);
+	cairo_show_text(cr, "Jeu de la Vie");
+
+	char* temps_str = malloc(sizeof(char) * 10); // on admet que le temps ne sera plus grand que 10 chars
+	sprintf(temps_str, "%d", tempsEvolution);
+	char* temps = concat("• Temps: ", temps_str);
+	char* voisinage = concat("• Voisinage cyclique: ", (voisinageCyclique ? "activé" : "désactivé"));
+	char* vieillissementStr = concat("• Vieillissement: ", (vieillissement ? "activé" : "désactivé"));
+
+
+
+	const int infoTitleHeight = TOP_MARGIN + 18;
+	const int commandsTitleHeight = infoTitleHeight * 2 + 27 * 3;
+	const int leftMargin = LEFT_MARGIN * 2 + TABLE_WIDTH;
+
+	cairo_set_font_size(cr, 24);
+	cairo_move_to(cr, leftMargin, infoTitleHeight);
+	cairo_show_text(cr, "Informations :");
+
+	cairo_set_font_size(cr, 16);
+	cairo_move_to(cr, leftMargin, infoTitleHeight + 27);
+	cairo_show_text(cr, temps);
+
+	cairo_move_to(cr, leftMargin, infoTitleHeight + 27 * 2);
+	cairo_show_text(cr, voisinage);
+
+	cairo_move_to(cr, leftMargin, infoTitleHeight + 27 * 3);
+	cairo_show_text(cr, vieillissementStr);
+
+	cairo_set_font_size(cr, 24);
+	cairo_move_to(cr, leftMargin, commandsTitleHeight);
+	cairo_show_text(cr, "Commandes :");
+
+	cairo_set_font_size(cr, 16);
+
+	int commandsCount = 5;
+	char** commands = malloc(sizeof(char) * commandsCount * 64);
+
+	commands[0] = "• clic gauche => Faire évoluer les cellules";
+	commands[1] = "• touche c => Activer / désactiver le comptage cyclique";
+	commands[2] = "• touche v => Activer / désactiver le vieillissement";
+	commands[3] = "• touche n => Changer de grille";
+	commands[4] = "• clic droit => Quitter le programme";
+
+
+	for(int i = 0; i < commandsCount; ++i)
+	{
+		cairo_move_to(cr, leftMargin, commandsTitleHeight + 27 * (i + 1));
+		cairo_show_text(cr, *(commands + i));
+	}
+
+	// free
+
+	free(commands);
+	free(voisinage);
+	free(vieillissementStr);
+	free(temps_str);
+	free(temps);
+	cairo_destroy(cr);
+	
+}
+
 void efface_grille(grille g)
 {
 	cairo_t* cr;
@@ -217,22 +283,25 @@ void debut_jeu(grille* g, grille* gc)
 	
 	// run the event loop
 	efface_grille(*g);
-	affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+	affiche_grille(*g, vieillissement);
+	affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
 	
 	while (1) {
 		// Clear the background
 		
 		XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
-		
+
 		if (e.type == Expose && e.xexpose.count < 1) {
-			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+			affiche_grille(*g, vieillissement);
+			affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
 		} else if (e.type == ButtonPress) {
 
 			if (e.xbutton.button == 1) {
 				tempsEvolution++;
 				evolue(g, gc, compte_voisins_vivants, vieillissement);
 				efface_grille(*g);
-				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_grille(*g, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
 			} else if (e.xbutton.button == 3) {
 				break; // on stoppe l'application
 			}
@@ -240,11 +309,14 @@ void debut_jeu(grille* g, grille* gc)
 		} else if (e.type == KeyPress)
 		{
 
+			printf("Key: %d\n", e.xkey.keycode);
+
 			if (e.xkey.keycode == XKeysymToKeycode(dsp, 'v')) // touche v
 			{
 				vieillissement = !vieillissement;
 				efface_grille(*g);
-				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_grille(*g, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
 			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'c')) // touche c
 			{
 				voisinageCyclique = !voisinageCyclique;
@@ -253,25 +325,70 @@ void debut_jeu(grille* g, grille* gc)
 					: &(compte_voisins_vivants_non_cyclique);
 
 				efface_grille(*g);
-				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_grille(*g, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
 			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'n')) // touche n
 			{
-				char nom_fichier_grille[256];
-				printf("Veuillez entrer un nouveau fichier grille:\n");
-				scanf("%s", nom_fichier_grille);
+				drawInputZone("", "");
+				int exit = 0;
+				int erreurInitialisation = 0;
+				FILE* testFile = NULL;
+				KeySym key;
+				char inputBuffer[255];
 
-				printf("Chargement du fichier %s...\n\n", nom_fichier_grille);
-				// reset le temps
-				tempsEvolution = 1;
-				// liberer la grille
-				libere_grille(g);
-				libere_grille(gc);
+				do {
+					char numeroGrille[10] = "";
+					char fichierGrille[100] = "grilles/grille";
 
-				// charger & démarrer le jeu
-				init_grille_from_file(nom_fichier_grille, g);
-				alloue_grille(g->nbl, g->nbc, gc);
-				affiche_grille(*g, 1, voisinageCyclique, vieillissement);
-				//debut_jeu(g, gc);
+					while (1) {
+						XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
+						if (e.type == KeyPress && XLookupString(&e.xkey, inputBuffer, 256, &key, 0) == 1) {
+							if (e.xkey.keycode == 36 || e.xkey.keycode == 104) {
+								break;
+							} else if (e.xkey.keycode == XKeysymToKeycode(dsp, XK_Delete) || e.xkey.keycode == XKeysymToKeycode(dsp, XK_BackSpace)) { // Effacer le dernier caractère de la chaine
+								numeroGrille[strlen(numeroGrille) - 1] = '\0'; 
+							} else if (e.xkey.keycode == XKeysymToKeycode(dsp, XK_Escape)) { // ESC pour annuler
+								exit = 1;
+								break;
+							} else {
+								strcat(numeroGrille, inputBuffer);
+							}
+							drawInputZone(numeroGrille, "");
+						}
+					}
+
+					if (!exit) {
+						strcat(fichierGrille, numeroGrille);
+						strcat(fichierGrille, ".txt");
+						testFile = fopen(fichierGrille, "r");
+						
+						if (testFile != NULL) {
+							libere_grille(g);
+							libere_grille(gc);
+							erreurInitialisation = init_grille_from_file(fichierGrille, g);
+							
+							if (erreurInitialisation)
+								drawInputZone("", "grille introuvable");
+							
+							fclose(testFile);
+							testFile = NULL;
+						}
+						else {
+							erreurInitialisation = 1;
+							drawInputZone("", "fichier introuvable");
+						}
+					}
+				} while (erreurInitialisation && !exit);
+
+				if (!exit) {
+					tempsEvolution = 1; // Réinitialisation du temps
+					alloue_grille(g->nbl, g->nbc, gc);
+				}
+
+				efface_grille(*g);
+				affiche_grille(*g, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
+			
 			}
 			
 		}
@@ -280,6 +397,63 @@ void debut_jeu(grille* g, grille* gc)
 	return;
 }
 
+void drawInputZone(char* input, char* error) {
+	const int x = LEFT_MARGIN * 2 + TABLE_WIDTH;
+	const int y = (TOP_MARGIN + 18) * 2 + 27 * 3 + 7.5 * 27 ; // 27 * 3 = nombre d'infos
+	cairo_t* cr;
+	cr = cairo_create(c_surface);
+
+	char inputLabel[256];
+	
+	if (strcmp(error, "") == 0)
+		sprintf(inputLabel, "Grille a charger:");
+	else
+		sprintf(inputLabel, "Grille a charger [%s]:", error);
+
+	cairo_text_extents_t extentsInput;
+	cairo_text_extents_t extentsInputLabel;
+
+	// couvrir la partie texte sans effacer toute la grille
+	cairo_set_source_rgb(cr, 0.811, 0.796, 0.886);
+	cairo_rectangle(cr, x - 20, y - 20, x + 100, y + 10);
+	cairo_fill(cr);
+
+	cairo_select_font_face(cr, "Arial",
+		CAIRO_FONT_SLANT_NORMAL,
+		CAIRO_FONT_WEIGHT_BOLD);
+
+	cairo_set_font_size(cr, 18);
+
+	cairo_set_source_rgb(cr, 0.2445, 0.0544554, 0.5544554);
+
+	cairo_move_to(cr, x, y);
+	cairo_show_text(cr, inputLabel);
+
+	cairo_text_extents(cr, inputLabel, &extentsInputLabel);
+
+	cairo_move_to(cr, x + extentsInputLabel.width + 2, y);
+	cairo_show_text(cr, input);
+
+	cairo_text_extents(cr, input, &extentsInput);
+
+	int inputOffset = x + extentsInputLabel.width + 5 + extentsInput.width;
+	cairo_move_to(cr, inputOffset, y - 15);
+	cairo_set_line_width(cr, 1);
+	cairo_line_to(cr, inputOffset, y + 10);
+	cairo_stroke(cr);
+
+	cairo_destroy(cr);
+}
+
+
+char* concat(const char* s1, const char* s2)
+{
+	char* result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
+	// in real code you would check for errors in malloc here
+	strcpy(result, s1);
+	strcat(result, s2);
+	return result;
+}
 
 # else // ici on stocke les fonctions utiles au texte
 

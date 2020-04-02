@@ -41,13 +41,14 @@ void alloue_grille(int l, int c, grille* g);
 void libere_grille(grille* g);
 
 /**
- * \fn void init_grille_from_file(char* filename, grille* g)
+ * \fn int init_grille_from_file(char* filename, grille* g)
  * \brief Initialise une grille en chargeant un fichier grille.txt
  *
  * \param filename Pointeur sur une chaîne contenant le nom du fichier de la grille
  * \param g Pointeur sur la grille concernée
+ * \return S'il y'a une erreur ou pas
  */
-void init_grille_from_file(char* filename, grille* g);
+int init_grille_from_file(char* filename, grille* g);
 
 /**
  * \fn static inline void set_vivante(int i, int j, grille g)

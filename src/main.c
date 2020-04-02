@@ -31,15 +31,18 @@ int main(int argc, char** argv)
 
 #if MODECAIRO
 
-	#define SIZEX 1000
-	#define SIZEY 600
+	#define SIZEX 1050
+	#define SIZEY 500
 
 	printf("Creating surface\n");
 		
 		c_surface = cairo_create_x11_surface0(SIZEX, SIZEY);
-#endif
+#else
 
 	affiche_grille(g, 1, 1, 0);
+
+#endif
+	
 	debut_jeu(&g, &gc);
 
 	// libérer la mémoire

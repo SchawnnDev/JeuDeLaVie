@@ -1,12 +1,13 @@
 #include "grille.h"
 
-void init_grille_from_file(char* filename, grille* g)
+int init_grille_from_file(char* filename, grille* g)
 {
 	FILE* pfile = NULL;
 	pfile = fopen(filename, "r");
-	assert(pfile != NULL);
 
 	int i, j, n, l, c, vivantes = 0, non_viables = 0;
+
+	if (pfile == NULL) return 1; // le fichier n'existe pas
 
 	fscanf(pfile, "%d", &l);
 	fscanf(pfile, "%d", &c);
@@ -30,7 +31,7 @@ void init_grille_from_file(char* filename, grille* g)
 	}
 
 	fclose(pfile);
-	return;
+	return 0;
 }
 
 

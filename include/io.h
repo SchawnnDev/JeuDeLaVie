@@ -15,8 +15,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-	#define SIZEX 1000
-	#define SIZEY 600
+	#define SIZEX 1050
+	#define SIZEY 500
 
  /*
   * Sources: https://www.cypherpunk.at/files/2014/11/cairo_xlib_simple.c
@@ -52,6 +52,42 @@ void affiche_trait(int c, double cellHeight);
  */
 void affiche_ligne(int c, double cellWidth);
 
+/*
+ * \fn void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement)
+ * \brief Affichage du texte sur la fenetre cairo
+ * \param tempsEvolution Le temps d'évolution de la grille
+ * \param voisinageCyclique Activer ou désactiver le voisinage cyclique
+ * \param vieillissement Affiche ou non l'age des cellules
+ */
+void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement);
+
+/**
+ * \fn void affiche_grille(grille g)
+ * \brief Affichage d'une grille
+ *
+ * \param g Objet grille que l'on souhaite afficher
+ * \param vieillissement Affiche ou non l'age des cellules
+ */
+void affiche_grille(grille g, int vieillissemnt);
+
+/**
+ * \fn char* concat(const char* s1, const char* s2)
+ * \brief Concatène deux chaînes de caractères ensemble (ne pas oublier de free après utilisation)
+ *
+ * \param s1 Première chaîne de caractères
+ * \param s1 Deuxième chaîne de caractères
+ * \return Les deux chaînes de caractères concactenés
+ */
+char* concat(const char* s1, const char* s2);
+
+/**
+ * \fn void drawTextInput(char* input, char* error)
+ * \brief Affichage d'une zone d'input pour le changement de grille
+ *
+ * \param input Chaine de caractères contenant un input
+ * \param error Chaine de caractères contenant une erreur
+ */
+void drawInputZone(char* input, char* error);
 
 #else
 
@@ -74,7 +110,6 @@ void affiche_trait(int c);
  */
 void affiche_ligne(int c, int* ligne, int vieillissement);
 
-#endif
 /**
  * \fn void affiche_grille(grille g)
  * \brief Affichage d'une grille
@@ -85,6 +120,8 @@ void affiche_ligne(int c, int* ligne, int vieillissement);
  * \param vieillissement Affiche ou non l'age des cellules
  */
 void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement);
+
+#endif
 
 /**
  * \fn void efface_grille(grille g)
@@ -102,6 +139,5 @@ void efface_grille(grille g);
  * \param gc Pointeur sur une seconde grill qui contient l'évolution de la première grille
  */
 void debut_jeu(grille* g, grille* gc);
-
 
 #endif
