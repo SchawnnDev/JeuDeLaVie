@@ -22,6 +22,7 @@ vpath %.o $(ODIR)
 main: main.o grille.o jeu.o io.o
 	@mkdir -p $(BDIR)
 	gcc -DMODE$(MODE) $(CFLAGS) -o $(BDIR)/main $(ODIR)/main.o $(ODIR)/grille.o $(ODIR)/jeu.o $(ODIR)/io.o $(LDFLAGS)
+	rm -rf $(ODIR)/
 
 %.o: %.c
 	@mkdir -p $(ODIR)
