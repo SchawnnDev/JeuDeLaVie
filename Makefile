@@ -51,6 +51,7 @@ doc:
 
 help:
 	@echo "======== Help Jeu de la Vie $(VER) ========"
+	@echo "./bin/main <grille>: éxécuter le programme"
 	@echo "make: compiler le programme"
 	@echo "make clean: effacer les fichiers générés"
 	@echo "make dist: créer une archive du projet"
