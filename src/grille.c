@@ -62,3 +62,69 @@ void libere_grille(grille* g)
 		free(g->cellules[i]);
 	free(g->cellules);
 }
+
+int grillesEquals(grille* g1, grille* g2) {
+	for (int i = 0; i < g1->nbl; i++)
+		for (int j = 0; j < g1->nbc; j++)
+			if (g1->cellules[i][j] != g2->cellules[i][j])
+				return 0;
+	return 1;
+}
+
+int grillesEmpty(grille* g) {
+	for (int i = 0; i < g->nbl; i++)
+		for (int j = 0; j < g->nbc; j++)
+			if (g->cellules[i][j] > 0)
+				return 0;
+	return 1;
+}
+
+int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille), int vieillissement) {
+	int tempsEvolutionOscillation = 0;
+	grille copieGrille;
+	grille grilleEvoluee;
+	grille temp;
+	alloue_grille(g->nbl, g->nbc, &copieGrille);
+	copie_grille(*g, copieGrille);
+
+	alloue_grille(g->nbl, g->nbc, &grilleEvoluee);
+	copie_grille(*g, grilleEvoluee);
+
+	alloue_grille(g->nbl, g->nbc, &temp);
+	copie_grille(*g, temp);
+
+	int maxInterval = 1000; // > 1000 évolutions de cellules, la grille ne peut pas etre oscillante
+	int maxDelais = 100; // > 100 évolutions de cellules, il n'y a plus de comportement oscillatoire
+	int i = 0;
+	do {
+		while (tempsEvolutionOscillation < maxInterval) {
+			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
+
+			if (grillesEmpty(&copieGrille))
+			{
+				libere_grille(&copieGrille);
+				libere_grille(&grilleEvoluee);
+				libere_grille(&temp);
+				return 0;
+			}
+			
+			if (grillesEquals(&copieGrille, &grilleEvoluee)) {
+				libere_grille(&copieGrille);
+				libere_grille(&grilleEvoluee);
+				libere_grille(&temp);
+				return tempsEvolutionOscillation;
+			}
+			
+		}
+
+		evolue(&copieGrille, &temp, &tempsEvolutionOscillation, compte_voisins_vivants, vieillissement);
+		copie_grille(copieGrille, grilleEvoluee);
+		tempsEvolutionOscillation = 0;
+		i++;
+	} while (i < maxDelais);
+
+	libere_grille(&copieGrille);
+	libere_grille(&grilleEvoluee);
+	libere_grille(&temp);
+	return 0;
+}

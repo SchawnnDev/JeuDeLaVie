@@ -45,7 +45,8 @@ int compte_voisins_vivants_non_cyclique(int i, int j, grille g);
  * \param gc Pointeur sur une seconde grille qui contiendra l'évolution de g
  * \param compte_voisins_vivants Fonction de calcul des voisins vivants (cyclique ou non cyclique)
  * \param vieillissement Affiche ou non l'age des cellules
+ * \param tempsEvolution Temps total d'evolution des cellules
  */
-void evolue(grille* g, grille* gc, int (*compte_voisins_vivants) (int, int, grille), int vieillissement);
+void evolue(grille* g, grille* gc, int (*compte_voisins_vivants) (int, int, grille), int vieillissement, int* tempsEvolution);
 
 #endif

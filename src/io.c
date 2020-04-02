@@ -187,11 +187,11 @@ void affiche_grille(grille g, int vieillissement)
 	return;
 }
 
-void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement)
+void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement, int tempsOscillation)
 {
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
-	cairo_set_source_rgb(cr, 0.2445, 0.0544554, 0.5544554);
+	cairo_set_source_rgb(cr, 0.301, 0.301, 0.301);
 	//cairo_set_source_rgb(cr, 0.2445, 0.5544554, 0.5544554);
 	cairo_select_font_face(cr, "Arial",
 		CAIRO_FONT_SLANT_NORMAL,
@@ -206,9 +206,6 @@ void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement
 	char* temps = concat("• Temps: ", temps_str);
 	char* voisinage = concat("• Voisinage cyclique: ", (voisinageCyclique ? "activé" : "désactivé"));
 	char* vieillissementStr = concat("• Vieillissement: ", (vieillissement ? "activé" : "désactivé"));
-
-
-
 	const int infoTitleHeight = TOP_MARGIN + 18;
 	const int commandsTitleHeight = infoTitleHeight * 2 + 27 * 3;
 	const int leftMargin = LEFT_MARGIN * 2 + TABLE_WIDTH;
@@ -227,20 +224,35 @@ void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement
 	cairo_move_to(cr, leftMargin, infoTitleHeight + 27 * 3);
 	cairo_show_text(cr, vieillissementStr);
 
+	cairo_move_to(cr, leftMargin, infoTitleHeight + 27 * 4);
+	if(tempsOscillation > 0)
+	{
+		char* oscillation_str = malloc(sizeof(char) * 256); // on admet que le temps ne sera plus grand que 10 chars
+		sprintf(oscillation_str, "• Oscillation: %d pas de temps par oscillation.", tempsOscillation);
+		cairo_show_text(cr, oscillation_str);
+		free(oscillation_str);
+	} else
+	{
+		char* oscillation_str = concat("• Oscillation: ", tempsOscillation == -1 ? "non testée" : "non oscillante");
+		cairo_show_text(cr, oscillation_str);
+		free(oscillation_str);
+	}
+
 	cairo_set_font_size(cr, 24);
 	cairo_move_to(cr, leftMargin, commandsTitleHeight);
 	cairo_show_text(cr, "Commandes :");
 
 	cairo_set_font_size(cr, 16);
 
-	int commandsCount = 5;
+	int commandsCount = 6;
 	char** commands = malloc(sizeof(char) * commandsCount * 64);
 
 	commands[0] = "• clic gauche => Faire évoluer les cellules";
 	commands[1] = "• touche c => Activer / désactiver le comptage cyclique";
 	commands[2] = "• touche v => Activer / désactiver le vieillissement";
 	commands[3] = "• touche n => Changer de grille";
-	commands[4] = "• clic droit => Quitter le programme";
+	commands[4] = "• touche o => Test d'oscillation";
+	commands[5] = "• clic droit => Quitter le programme";
 
 
 	for(int i = 0; i < commandsCount; ++i)
@@ -271,12 +283,11 @@ void efface_grille(grille g)
 
 void debut_jeu(grille* g, grille* gc)
 {
-
 	// variables
-	int skip = 0;
 	int tempsEvolution = 1;
 	int voisinageCyclique = 1;
 	int vieillissement = 0;
+	int tempsOscillation = -1; // -1 = non testée
 	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
 	Display* const dsp = cairo_xlib_surface_get_display(c_surface);
 	XEvent e;
@@ -284,7 +295,7 @@ void debut_jeu(grille* g, grille* gc)
 	// run the event loop
 	efface_grille(*g);
 	affiche_grille(*g, vieillissement);
-	affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
+	affiche_texte(tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 	
 	while (1) {
 		// Clear the background
@@ -293,15 +304,14 @@ void debut_jeu(grille* g, grille* gc)
 
 		if (e.type == Expose && e.xexpose.count < 1) {
 			affiche_grille(*g, vieillissement);
-			affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
+			affiche_texte(tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 		} else if (e.type == ButtonPress) {
 
 			if (e.xbutton.button == 1) {
-				tempsEvolution++;
-				evolue(g, gc, compte_voisins_vivants, vieillissement);
+				evolue(g, gc, compte_voisins_vivants, vieillissement, &tempsEvolution);
 				efface_grille(*g);
 				affiche_grille(*g, vieillissement);
-				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 			} else if (e.xbutton.button == 3) {
 				break; // on stoppe l'application
 			}
@@ -314,7 +324,7 @@ void debut_jeu(grille* g, grille* gc)
 				vieillissement = !vieillissement;
 				efface_grille(*g);
 				affiche_grille(*g, vieillissement);
-				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'c')) // touche c
 			{
 				voisinageCyclique = !voisinageCyclique;
@@ -324,7 +334,14 @@ void debut_jeu(grille* g, grille* gc)
 
 				efface_grille(*g);
 				affiche_grille(*g, vieillissement);
-				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
+			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'o')) // touche c
+			{
+				tempsOscillation = testOscillation(g, compte_voisins_vivants, vieillissement);
+				
+				efface_grille(*g);
+				affiche_grille(*g, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'n')) // touche n
 			{
 				drawInputZone("", "");
@@ -385,7 +402,7 @@ void debut_jeu(grille* g, grille* gc)
 
 				efface_grille(*g);
 				affiche_grille(*g, vieillissement);
-				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_texte(tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 			
 			}
 			
@@ -397,16 +414,16 @@ void debut_jeu(grille* g, grille* gc)
 
 void drawInputZone(char* input, char* error) {
 	const int x = LEFT_MARGIN * 2 + TABLE_WIDTH;
-	const int y = (TOP_MARGIN + 18) * 2 + 27 * 3 + 7.5 * 27 ; // 27 * 3 = nombre d'infos
+	const int y = (TOP_MARGIN + 18) * 2 + 11.5 * 27 ; // 27 * 4 = nombre d'infos
 	cairo_t* cr;
 	cr = cairo_create(c_surface);
 
 	char inputLabel[256];
 	
 	if (strcmp(error, "") == 0)
-		sprintf(inputLabel, "Grille a charger:");
+		sprintf(inputLabel, "Grille à charger:");
 	else
-		sprintf(inputLabel, "Grille a charger [%s]:", error);
+		sprintf(inputLabel, "Grille à charger [%s]:", error);
 
 	cairo_text_extents_t extentsInput;
 	cairo_text_extents_t extentsInputLabel;
@@ -474,7 +491,7 @@ void affiche_ligne(int c, int* ligne, int vieillissement)
 	printf("|\n");
 }
 
-void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement)
+void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement, int tempsOscillation)
 {
 	const int l = g.nbl;
 	const int c = g.nbc;
@@ -487,6 +504,25 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 	printf("Voisinage cyclique: %s", cycliqueStr);
 	printf(" | ");
 	printf("Vieillissement: %s", vieillissementStr);
+	printf(" | ");
+	printf("Oscillation: ");
+
+	switch (tempsOscillation)
+	{
+		case -1:
+			printf("Non testée");
+			break;
+
+		case 0:
+			printf("Non oscillante");
+			break;
+
+		default:
+			printf("%d pas de temps par oscillation.", tempsOscillation);
+			break;
+			
+	}
+	
 	printf("\n\n");
 	affiche_trait(c);
 	for (int i = 0; i < l; ++i)
@@ -510,6 +546,7 @@ void debut_jeu(grille* g, grille* gc)
 	int tempsEvolution = 1;
 	int voisinageCyclique = 1;
 	int vieillissement = 0;
+	int tempsOscillation = -1; // -1 = non testée
 	int (*compte_voisins_vivants)(int, int, grille) = compte_voisins_vivants_cyclique;
 
 	while (c != 'q') // touche 'q' pour quitter
@@ -524,10 +561,9 @@ void debut_jeu(grille* g, grille* gc)
 					break;
 				}
 				// touche "entree" pour évoluer
-				tempsEvolution++;
-				evolue(g, gc, compte_voisins_vivants, vieillissement);
+				evolue(g, gc, compte_voisins_vivants, vieillissement, &tempsEvolution);
 				efface_grille(*g);
-				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 				break;
 			}
 		case 'n':
@@ -539,6 +575,7 @@ void debut_jeu(grille* g, grille* gc)
 				printf("Chargement du fichier %s...\n\n", nom_fichier_grille);
 				// reset le temps
 				tempsEvolution = 1;
+				tempsOscillation = -1;
 				// liberer la grille
 				libere_grille(g);
 				libere_grille(gc);
@@ -546,7 +583,7 @@ void debut_jeu(grille* g, grille* gc)
 				// charger & démarrer le jeu
 				init_grille_from_file(nom_fichier_grille, g);
 				alloue_grille(g->nbl, g->nbc, gc);
-				affiche_grille(*g, 1, voisinageCyclique, vieillissement);
+				affiche_grille(*g, 1, voisinageCyclique, vieillissement, tempsOscillation);
 				//debut_jeu(g, gc);
 				skip = 1; // eviter d'evoluer a la prochaine action
 				printf("\n\e[2A");
@@ -561,17 +598,27 @@ void debut_jeu(grille* g, grille* gc)
 					                         : &(compte_voisins_vivants_non_cyclique);
 
 				efface_grille(*g);
-				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 				printf("\e[K");
 				printf("\n");
 
 				break;
 			}
+		case 'o':
+		{
+			tempsOscillation = testOscillation(g, compte_voisins_vivants, vieillissement);
+			efface_grille(*g);
+			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
+			printf("\n\e[2A");
+			printf("\n");
+
+			break;
+		}
 		case 'v':
 			vieillissement = !vieillissement;
 			//printf("\n\e[1A");
 			efface_grille(*g);
-			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement);
+			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
 			//printf("\e[A");
 			printf("\e[K");
 			printf("\n");

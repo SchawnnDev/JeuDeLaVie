@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		c_surface = cairo_create_x11_surface0(SIZEX, SIZEY);
 #else
 
-	affiche_grille(g, 1, 1, 0);
+	affiche_grille(g, 1, 1, 0, -1);
 
 #endif
 	

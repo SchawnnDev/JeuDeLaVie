@@ -58,8 +58,9 @@ void affiche_ligne(int c, double cellWidth);
  * \param tempsEvolution Le temps d'évolution de la grille
  * \param voisinageCyclique Activer ou désactiver le voisinage cyclique
  * \param vieillissement Affiche ou non l'age des cellules
+ * \param tempsOscillation Pas de temps par oscillation
  */
-void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement);
+void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement, int tempsOscillation);
 
 /**
  * \fn void affiche_grille(grille g)
@@ -118,8 +119,9 @@ void affiche_ligne(int c, int* ligne, int vieillissement);
  * \param tempsEvolution Le temps d'évolution de la grille
  * \param voisinageCyclique Activer ou désactiver le voisinage cyclique
  * \param vieillissement Affiche ou non l'age des cellules
+ * \param tempsOscillation Pas de temps par oscillation
  */
-void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement);
+void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vieillissement, int tempsOscillation);
 
 #endif
 
