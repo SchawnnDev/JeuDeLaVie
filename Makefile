@@ -4,7 +4,7 @@ ODIR=obj
 BDIR=bin
 IDIR=include
 LDIR=lib
-VER=4.0
+VER=5.0
 MODE=CAIRO
 
 # -> Iinclude pour les fichiers .h

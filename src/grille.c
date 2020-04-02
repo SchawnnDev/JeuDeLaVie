@@ -96,6 +96,8 @@ int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille),
 	int maxInterval = 1000; // > 1000 évolutions de cellules, la grille ne peut pas etre oscillante
 	int maxDelais = 100; // > 100 évolutions de cellules, il n'y a plus de comportement oscillatoire
 	int i = 0;
+
+	
 	do {
 		while (tempsEvolutionOscillation < maxInterval) {
 			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
@@ -117,7 +119,7 @@ int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille),
 			
 		}
 
-		evolue(&copieGrille, &temp, &tempsEvolutionOscillation, compte_voisins_vivants, vieillissement);
+		evolue(&copieGrille, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
 		copie_grille(copieGrille, grilleEvoluee);
 		tempsEvolutionOscillation = 0;
 		i++;

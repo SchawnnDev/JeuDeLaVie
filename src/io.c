@@ -150,13 +150,13 @@ void affiche_grille(grille g, int vieillissement)
 				// diagonale 1
 				cairo_move_to(cr_grilles, LEFT_MARGIN +  j * cellWidth, TOP_MARGIN + i * cellHeight);
 				cairo_line_to(cr_grilles, LEFT_MARGIN + (j + 1) * cellWidth, TOP_MARGIN + (i + 1) * cellHeight);
-				cairo_set_line_width(cr_grilles, LINE_WIDTH);
+				cairo_set_line_width(cr_grilles, LINE_WIDTH + 1);
 				cairo_stroke(cr_grilles);
 
 				// diagonale 2
 				cairo_move_to(cr_grilles, LEFT_MARGIN + (j + 1) * cellWidth, TOP_MARGIN + i * cellHeight);
 				cairo_line_to(cr_grilles, LEFT_MARGIN + j * cellWidth, TOP_MARGIN + (i + 1) * cellHeight);
-				cairo_set_line_width(cr_grilles, LINE_WIDTH);
+				cairo_set_line_width(cr_grilles, LINE_WIDTH + 1);
 				cairo_stroke(cr_grilles);
 
 				continue;
@@ -397,6 +397,7 @@ void debut_jeu(grille* g, grille* gc)
 
 				if (!exit) {
 					tempsEvolution = 1; // Réinitialisation du temps
+					tempsOscillation = -1;
 					alloue_grille(g->nbl, g->nbc, gc);
 				}
 
