@@ -119,7 +119,6 @@ void copie_grille(grille gs, grille gd);
  * \param g2 Objet grille 2
  * \return Retourne 1 si les deux grilles sont égales, sinon 0
  */
-
 int grillesEquals(grille* g1, grille* g2);
 
 /**
@@ -129,7 +128,6 @@ int grillesEquals(grille* g1, grille* g2);
  * \param g1 Objet grille 
  * \return Retourne 1 si la grille est vide, sinon 0
  */
-
 int grillesEmpty(grille* g);
 
 /**
@@ -141,8 +139,6 @@ int grillesEmpty(grille* g);
  * \param vieillissement si le viellissement est actif ou non 
  * \return Retourne 0 si la grille n'est pas oscillante, sinon le pas de temps 
  */
-
-
 int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille), int vieillissement);
 
 #endif

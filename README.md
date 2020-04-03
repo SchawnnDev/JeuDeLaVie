@@ -1,3 +1,4 @@
+
 # Jeu de la Vie
 Ce projet est un devoir de la S3 Informatique à l'UFR Math/info de Strasbourg
 Il traite sur le Jeu de la Vie, qui est un automate cellulaire, et est écrit en C.
@@ -17,6 +18,7 @@ La structure du projet se présente comme cela :
 - doc/ => Dossier contenant la documentation (doxygen)
 - grilles/ => Dossier contenant les fichiers grilles
 - include/ => Dossier contenant les fichiers d'entête
+- lib/ => Dossier contenant la librairie
 - obj/ => Dossier contenant les fichiers binaires
 - src/ => Dossier contenant les fichiers sources
 - Makefile => Fichier config Make
@@ -29,12 +31,15 @@ La structure du projet se présente comme cela :
 - Le programme Make
 - Le programme Doxygen (pour la documentation)
 - Le programme Tar (pour la génération d'archives)
+- Pour le mode graphique, les librairies cairo et X11
 
 ### Générer l'exécutable
 
-Pour compiler le programme et générer l'exécutable il suffit d'exécuter la commande:
+Le programme peut être compilé dans deux modes différents. Pour choisir ce mode il suffit de le préciser lors de l’exécution du makefile. Pour compiler le programme et générer l'exécutable il suffit d'exécuter la commande:
 ~~~{.sh}
-make
+make MODE=TEXTE # Affichage textuel dans la console
+ou
+make MODE=CAIRO # Affichage graphique dans une fenêtre
 ~~~
 L’exécutable est générée dans le dossier bin/.
 
@@ -74,9 +79,40 @@ Lorsque l'application est démarrée il est possible d’exécuter des commandes
 
 - c => Activer/désactiver le comptage cyclique
 - v => Activer/désactiver le vieillissement
+- o => Vérifie si la colonie est oscillante et affiche le temps si c'est le cas
 - n => Changer de grille
 - q => Quitter le programme
 
 ### Evolution
 
 Pour faire évoluer les cellules, il suffit d'appuyer sur la touche entrée. 
+
+## Version graphique
+### Démarrage
+Après avoir compilé le programme, l'exécutable à été générée dans le dossier bin/. 
+Le programme a pour arguments, le nom du fichier de la grille, il suffit donc d'exécuter la commande:
+~~~{.sh}
+./bin/main nom_fichier_grille.txt
+~~~
+
+Une fenêtre s'ouvrira et les instructions y seront notées.
+
+### Commandes
+Comme pour la version texte, il est possible d'exécuter des commandes qui sont ici, des touches à presser.
+
+- touche c => Activer/désactiver le comptage cyclique
+- touche  v => Activer/désactiver le vieillissement
+- touche o => Vérifier si la colonie est oscillante et afficher le temps si c'est le cas
+- touche n => Changer de grille
+- clique droit souris => Quitter le programme
+
+### Evolution
+
+Pour faire évoluer les cellules, il suffit de faire un clique gauche sur la souris.
+
+# Versions
+
+Le programme se divise en 5 versions, elles sont toutes disponibles dans les tag du dépôt git.
+
+Voici l'évolution de la partie graphique: 
+![Evolution de la partie graphique du jeu de la vie](http://schawnndev.fr/files/gol_evolution.gif)

@@ -168,9 +168,10 @@ void affiche_grille(grille g, int vieillissement)
 
 			if (vieillissement)
 			{ // afficher chiffres
-				cairo_set_font_size(cr, 10);
+				cairo_set_font_size(cr, 16);
+				cairo_set_source_rgb(cr, 0.301, 0.301, 0.301);
 				// on ajoute 0.5 pour atteindre la moitié
-				cairo_move_to(cr, LEFT_MARGIN + (j + 0.5) * cellWidth, TOP_MARGIN + (i + 0.5) * cellHeight);
+				cairo_move_to(cr, LEFT_MARGIN + (j + 0.5) * cellWidth - 2, TOP_MARGIN + (i + 0.5) * cellHeight - 2);
 
 				// converter int to string
 				char str[12];
