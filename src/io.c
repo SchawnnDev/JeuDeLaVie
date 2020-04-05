@@ -59,6 +59,7 @@ cairo_surface_t* cairo_create_x11_surface0(int x, int y)
 void cairo_close_x11_surface(cairo_surface_t* sfc)
 {
 	Display* dsp = cairo_xlib_surface_get_display(sfc);
+	cairo_debug_reset_static_data();
 	cairo_surface_destroy(sfc);
 	XCloseDisplay(dsp);
 }
@@ -263,8 +264,10 @@ void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement
 		cairo_show_text(cr, *(commands + i));
 	}
 
+	// reset static data
+	cairo_debug_reset_static_data();
+	
 	// free
-
 	free(commands);
 	free(voisinage);
 	free(vieillissementStr);
