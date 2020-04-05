@@ -12,9 +12,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: list
-      run: ls
-    - name: cd to root
-      run: cd ..
     - name: make
       run: make
