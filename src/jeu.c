@@ -31,7 +31,7 @@ int compte_voisins_vivants_non_cyclique(int i, int j, grille g)
 	return v;
 }
 
-void evolue(grille *g, grille *gc, int (*compte_voisins_vivants)(int, int, grille), int vieillissement, int* tempsEvolution)
+void evolue(grille* g, grille* gc, int (*compte_voisins_vivants)(int, int, grille), int vieillissement, int* tempsEvolution)
 {
 	copie_grille(*g, *gc); // copie temporaire de la grille
 	int i, j, l = g->nbl, c = g->nbc, v;

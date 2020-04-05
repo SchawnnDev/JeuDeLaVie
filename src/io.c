@@ -320,8 +320,6 @@ void debut_jeu(grille* g, grille* gc)
 		} else if (e.type == KeyPress)
 		{
 
-			printf("Key %d\n", e.xkey.keycode);
-
 			if (e.xkey.keycode == XKeysymToKeycode(dsp, 'v')) // touche v
 			{
 				vieillissement = !vieillissement;

@@ -80,7 +80,7 @@ int grillesEmpty(grille* g) {
 }
 
 int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille), int vieillissement) {
-	int tempsEvolutionOscillation = 0;
+	int* tempsEvolutionOscillation = 0;
 	grille copieGrille;
 	grille grilleEvoluee;
 	grille temp;
@@ -93,38 +93,46 @@ int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille),
 	alloue_grille(g->nbl, g->nbc, &temp);
 	copie_grille(*g, temp);
 
-	int maxInterval = 1000; // > 1000 évolutions de cellules, la grille ne peut pas etre oscillante
-	int maxDelais = 100; // > 100 évolutions de cellules, il n'y a plus de comportement oscillatoire
 	int i = 0;
-
 	
 	do {
-		while (tempsEvolutionOscillation < maxInterval) {
-			
-			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
+		// on cherche une similitude
+		while (*tempsEvolutionOscillation < 1000) { 	// > 1000 évolutions de cellules, la grille ne peut pas etre oscillante
+
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
+			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, tempsEvolutionOscillation);
+			#pragma GCC diagnostic pop
+
 
 			if (grillesEmpty(&copieGrille))
 			{
 				libere_grille(&copieGrille);
 				libere_grille(&grilleEvoluee);
 				libere_grille(&temp);
+				// plus d'évolution donc on retourne 0
 				return 0;
 			}
 			
 			if (grillesEquals(&copieGrille, &grilleEvoluee)) {
+				// si les grilles  sont égales c'est qu'on a réussi à trouver une oscillation
 				libere_grille(&copieGrille);
 				libere_grille(&grilleEvoluee);
 				libere_grille(&temp);
-				return tempsEvolutionOscillation;
+				return *tempsEvolutionOscillation;
 			}
 			
 		}
 
-		evolue(&copieGrille, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
+		evolue(&copieGrille, &temp, compte_voisins_vivants, vieillissement, tempsEvolutionOscillation);
 		copie_grille(copieGrille, grilleEvoluee);
-		tempsEvolutionOscillation = 0;
+
+		// on recommence à 0 car on a pas trouvé de similitudes
+		*tempsEvolutionOscillation = 0;
 		i++;
-	} while (i < maxDelais);
+	} while (i < 100); // > 100 évolutions de cellules, il n'y a plus de comportement oscillatoire
+
+	// liberer les grilles
 
 	libere_grille(&copieGrille);
 	libere_grille(&grilleEvoluee);

@@ -26,6 +26,7 @@ int main(int argc, char** argv)
 
 	if (grilleFile == NULL)
 	{
+		fclose(grilleFile);
 		printf("Erreur: le fichier n'existe pas.\n");
 		return 1;
 	}
