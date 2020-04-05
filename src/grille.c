@@ -80,7 +80,7 @@ int grillesEmpty(grille* g) {
 }
 
 int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille), int vieillissement) {
-	int* tempsEvolutionOscillation = 0;
+	int tempsEvolutionOscillation = 0;
 	grille copieGrille;
 	grille grilleEvoluee;
 	grille temp;
@@ -97,11 +97,11 @@ int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille),
 	
 	do {
 		// on cherche une similitude
-		while (*tempsEvolutionOscillation < 1000) { 	// > 1000 évolutions de cellules, la grille ne peut pas etre oscillante
+		while (tempsEvolutionOscillation < 1000) { 	// > 1000 évolutions de cellules, la grille ne peut pas etre oscillante
 
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
-			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, tempsEvolutionOscillation);
+			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
 			#pragma GCC diagnostic pop
 
 
@@ -119,16 +119,16 @@ int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille),
 				libere_grille(&copieGrille);
 				libere_grille(&grilleEvoluee);
 				libere_grille(&temp);
-				return *tempsEvolutionOscillation;
+				return tempsEvolutionOscillation;
 			}
 			
 		}
 
-		evolue(&copieGrille, &temp, compte_voisins_vivants, vieillissement, tempsEvolutionOscillation);
+		evolue(&copieGrille, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
 		copie_grille(copieGrille, grilleEvoluee);
 
 		// on recommence à 0 car on a pas trouvé de similitudes
-		*tempsEvolutionOscillation = 0;
+		tempsEvolutionOscillation = 0;
 		i++;
 	} while (i < 100); // > 100 évolutions de cellules, il n'y a plus de comportement oscillatoire
 
