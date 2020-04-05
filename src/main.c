@@ -18,16 +18,28 @@ int main(int argc, char** argv)
 {
 	if (argc != 2)
 	{
-		printf("usage : main <fichier grille>");
+		printf("usage : main <fichier grille>\n");
+		return 1;
+	}
+
+	FILE* grilleFile = fopen(argv[1], "r");
+
+	if (grilleFile == NULL)
+	{
+		printf("Erreur: le fichier n'existe pas.\n");
 		return 1;
 	}
 
 	grille g, gc;
 
 	// charger & démarrer le jeu
-	init_grille_from_file(argv[1], &g);
+	if(init_grille_from_file(argv[1], &g))
+	{
+		printf("Erreur: le fichier n'existe pas.\n");
+		return 1;
+	}
+	
 	alloue_grille(g.nbl, g.nbc, &gc);
-
 
 #if MODECAIRO
 

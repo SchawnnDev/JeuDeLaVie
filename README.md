@@ -115,4 +115,5 @@ Pour faire évoluer les cellules, il suffit de faire un clique gauche sur la sou
 Le programme se divise en 5 versions, elles sont toutes disponibles dans les tag du dépôt git.
 
 Voici l'évolution de la partie graphique: 
+
 ![Evolution de la partie graphique du jeu de la vie](http://schawnndev.fr/files/gol_evolution.gif)

@@ -100,6 +100,7 @@ int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille),
 	
 	do {
 		while (tempsEvolutionOscillation < maxInterval) {
+			
 			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
 
 			if (grillesEmpty(&copieGrille))

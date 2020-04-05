@@ -320,6 +320,8 @@ void debut_jeu(grille* g, grille* gc)
 		} else if (e.type == KeyPress)
 		{
 
+			printf("Key %d\n", e.xkey.keycode);
+
 			if (e.xkey.keycode == XKeysymToKeycode(dsp, 'v')) // touche v
 			{
 				vieillissement = !vieillissement;
@@ -346,57 +348,62 @@ void debut_jeu(grille* g, grille* gc)
 			} else if (e.xkey.keycode == XKeysymToKeycode(dsp, 'n')) // touche n
 			{
 				drawInputZone("", "");
-				int exit = 0;
-				int erreurInitialisation = 0;
+				int esc = 0;
+				int error = 0;
 				FILE* testFile = NULL;
 				KeySym key;
 				char inputBuffer[255];
 
 				do {
 					char numeroGrille[10] = "";
-					char fichierGrille[100] = "grilles/grille";
+					char path[100] = "grilles/grille";
 
 					while (1) {
 						XNextEvent(cairo_xlib_surface_get_display(c_surface), &e);
+						
 						if (e.type == KeyPress && XLookupString(&e.xkey, inputBuffer, 256, &key, 0) == 1) {
-							if (e.xkey.keycode == 36 || e.xkey.keycode == 104) {
+							
+							if (e.xkey.keycode == XKeysymToKeycode(dsp, XK_Return) || e.xkey.keycode == XKeysymToKeycode(dsp, XK_KP_Enter)) { // enter ou enter num pad
 								break;
 							} else if (e.xkey.keycode == XKeysymToKeycode(dsp, XK_Delete) || e.xkey.keycode == XKeysymToKeycode(dsp, XK_BackSpace)) { // Effacer le dernier caractère de la chaine
 								numeroGrille[strlen(numeroGrille) - 1] = '\0'; 
 							} else if (e.xkey.keycode == XKeysymToKeycode(dsp, XK_Escape)) { // ESC pour annuler
-								exit = 1;
+								esc = 1;
 								break;
 							} else {
 								strcat(numeroGrille, inputBuffer);
 							}
+
+							//effacer l'input
 							drawInputZone(numeroGrille, "");
+							
 						}
+						
 					}
 
-					if (!exit) {
-						strcat(fichierGrille, numeroGrille);
-						strcat(fichierGrille, ".txt");
-						testFile = fopen(fichierGrille, "r");
+					if (!esc) {
+						strcat(path, numeroGrille);
+						strcat(path, ".txt");
+						testFile = fopen(path, "r");
 						
 						if (testFile != NULL) {
 							libere_grille(g);
 							libere_grille(gc);
-							erreurInitialisation = init_grille_from_file(fichierGrille, g);
+							error = init_grille_from_file(path, g);
 							
-							if (erreurInitialisation)
+							if (error)
 								drawInputZone("", "grille introuvable");
 							
 							fclose(testFile);
 							testFile = NULL;
-						}
-						else {
-							erreurInitialisation = 1;
+						} else {
+							error = 1;
 							drawInputZone("", "fichier introuvable");
 						}
 					}
-				} while (erreurInitialisation && !exit);
+				} while (error && !esc);
 
-				if (!exit) {
+				if (!esc) {
 					tempsEvolution = 1; // Réinitialisation du temps
 					tempsOscillation = -1;
 					alloue_grille(g->nbl, g->nbc, gc);
@@ -511,20 +518,19 @@ void affiche_grille(grille g, int tempsEvolution, int voisinageCyclique, int vie
 
 	switch (tempsOscillation)
 	{
-		case -1:
-			printf("Non testée");
-			break;
+	case -1:
+		printf("Non testée");
+		break;
 
-		case 0:
-			printf("Non oscillante");
-			break;
+	case 0:
+		printf("Non oscillante");
+		break;
 
-		default:
-			printf("%d pas de temps par oscillation.", tempsOscillation);
-			break;
-			
+	default:
+		printf("%d pas de temps par oscillation.", tempsOscillation);
+		break;
 	}
-	
+
 	printf("\n\n");
 	affiche_trait(c);
 	for (int i = 0; i < l; ++i)
@@ -570,14 +576,31 @@ void debut_jeu(grille* g, grille* gc)
 			}
 		case 'n':
 			{
+
 				char nom_fichier_grille[256];
-				printf("Veuillez entrer un nouveau fichier grille:\n");
-				scanf("%s", nom_fichier_grille);
+				
+				do
+				{
+					printf("Veuillez entrer un nouveau fichier grille:\n");
+					scanf("%s", nom_fichier_grille);
+					FILE* fichier = fopen(nom_fichier_grille, "r");
+
+					if (fichier == NULL)
+					{
+						printf("Erreur: le fichier n'existe pas.\n");
+						continue;
+					}
+
+					fclose(fichier);
+					break;
+
+				} while (1);
 
 				printf("Chargement du fichier %s...\n\n", nom_fichier_grille);
 				// reset le temps
 				tempsEvolution = 1;
 				tempsOscillation = -1;
+				
 				// liberer la grille
 				libere_grille(g);
 				libere_grille(gc);
@@ -607,15 +630,14 @@ void debut_jeu(grille* g, grille* gc)
 				break;
 			}
 		case 'o':
-		{
-			tempsOscillation = testOscillation(g, compte_voisins_vivants, vieillissement);
-			efface_grille(*g);
-			affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
-			printf("\n\e[2A");
-			printf("\n");
-
-			break;
-		}
+			{
+				tempsOscillation = testOscillation(g, compte_voisins_vivants, vieillissement);
+				efface_grille(*g);
+				affiche_grille(*g, tempsEvolution, voisinageCyclique, vieillissement, tempsOscillation);
+				printf("\e[K");
+				printf("\n");
+				break;
+			}
 		case 'v':
 			vieillissement = !vieillissement;
 			//printf("\n\e[1A");
