@@ -24,6 +24,9 @@ int main(int argc, char** argv)
 
 	FILE* grilleFile = fopen(argv[1], "r");
 
+	// je demande le chemin complet car j'ai envie de plus de liberté au niveau des fichiers
+	// si je veux tester d'autres fichiers de grille qui ne sont pas dans le dossier par exemple.
+
 	if (grilleFile == NULL)
 	{
 		fclose(grilleFile);

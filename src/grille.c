@@ -104,7 +104,6 @@ int testOscillation(grille* g, int (*compte_voisins_vivants) (int, int, grille),
 			evolue(&grilleEvoluee, &temp, compte_voisins_vivants, vieillissement, &tempsEvolutionOscillation);
 			#pragma GCC diagnostic pop
 
-
 			if (grillesEmpty(&copieGrille))
 			{
 				libere_grille(&copieGrille);
