@@ -50,8 +50,6 @@ int main(int argc, char** argv)
 	#define SIZEX 1050
 	#define SIZEY 500
 
-	printf("Creating surface\n");
-		
 		c_surface = cairo_create_x11_surface0(SIZEX, SIZEY);
 #else
 

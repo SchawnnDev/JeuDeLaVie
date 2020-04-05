@@ -15,6 +15,7 @@
 #define LINE_WIDTH 2
 #define TABLE_WIDTH 450
 #define TABLE_HEIGHT 400
+#define TEXT_FONT "Arial"
 
 extern cairo_surface_t* c_surface;
 XClassHint *classHint;
@@ -125,7 +126,7 @@ void affiche_grille(grille g, int vieillissement)
 	{
 
 		cairo_set_source_rgb(cr, 0.14, 0.4, 0.8);
-		cairo_select_font_face(cr, "Arial",
+		cairo_select_font_face(cr, TEXT_FONT,
 			CAIRO_FONT_SLANT_NORMAL,
 			CAIRO_FONT_WEIGHT_BOLD);
 
@@ -194,7 +195,7 @@ void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement
 	cr = cairo_create(c_surface);
 	cairo_set_source_rgb(cr, 0.301, 0.301, 0.301);
 	//cairo_set_source_rgb(cr, 0.2445, 0.5544554, 0.5544554);
-	cairo_select_font_face(cr, "Arial",
+	cairo_select_font_face(cr, TEXT_FONT,
 		CAIRO_FONT_SLANT_NORMAL,
 		CAIRO_FONT_WEIGHT_BOLD);
 
@@ -440,13 +441,13 @@ void drawInputZone(char* input, char* error) {
 	cairo_rectangle(cr, x - 20, y - 20, x + 100, y + 10);
 	cairo_fill(cr);
 
-	cairo_select_font_face(cr, "Arial",
+	cairo_select_font_face(cr, TEXT_FONT,
 		CAIRO_FONT_SLANT_NORMAL,
 		CAIRO_FONT_WEIGHT_BOLD);
 
 	cairo_set_font_size(cr, 18);
 
-	cairo_set_source_rgb(cr, 0.2445, 0.0544554, 0.5544554);
+	cairo_set_source_rgb(cr, 0.301, 0.301, 0.301);
 
 	cairo_move_to(cr, x, y);
 	cairo_show_text(cr, inputLabel);
