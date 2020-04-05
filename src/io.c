@@ -264,9 +264,6 @@ void affiche_texte(int tempsEvolution, int voisinageCyclique, int vieillissement
 		cairo_show_text(cr, *(commands + i));
 	}
 
-	// reset static data
-	cairo_debug_reset_static_data();
-	
 	// free
 	free(commands);
 	free(voisinage);
