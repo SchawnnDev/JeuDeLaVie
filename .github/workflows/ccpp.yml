@@ -12,5 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: cd to root
+      run: cd ..
     - name: make
       run: make
