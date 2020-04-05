@@ -125,7 +125,7 @@ int grillesEquals(grille* g1, grille* g2);
  * \fn int grillesEmpty(grille* g)
  * \brief Vérifie si la grille g est vide
  *
- * \param g1 Objet grille 
+ * \param g Objet grille 
  * \return Retourne 1 si la grille est vide, sinon 0
  */
 int grillesEmpty(grille* g);

@@ -20,16 +20,19 @@
 
  /*
   * Sources: https://www.cypherpunk.at/files/2014/11/cairo_xlib_simple.c
-  *
-  *! Ouvre une fenêtre X11 ete crée la surface de base cairo sur cette fenêtre
-  * @param x Largeur de la fenêtre
-  * @param y Hauteur de la fênetre
-  * @return Retourne un pointeur vers une surface Xlib cairo valid.
+  * \fn cairo_surface_t* cairo_create_x11_surface0(int x, int y)
+  * \brief Ouvre une fenêtre X11 ete crée la surface de base cairo sur cette fenêtre
+  * 
+  * \param x Largeur de la fenêtre
+  * \param y Hauteur de la fênetre
+  * 
+  * \return Retourne un pointeur vers une surface Xlib cairo valid.
   */
 cairo_surface_t* cairo_create_x11_surface0(int x, int y);
 
-/*! Destroy cairo Xlib surface and close X connection.
- * Detruit la surface cairo XLib et ferme la connection X.
+/*
+ * \fn void cairo_close_x11_surface()
+ * \brief Detruit la surface cairo XLib et ferme la connection X.
  */
 void cairo_close_x11_surface();
 
@@ -38,6 +41,7 @@ void cairo_close_x11_surface();
  * \brief Affichage d'un trait horizontal
  *
  * \param c Entier représentant le nombre de colonnes de longueur qu'aura le trait horizontal
+ * \param cellHeight Hauteur d'une cellule du tableau
  */
 void affiche_trait(int c, double cellHeight);
 
@@ -47,8 +51,7 @@ void affiche_trait(int c, double cellHeight);
  * \brief Affichage d'une ligne de la grille
  *
  * \param c Entier représentant le nombre de colonnes de longueur qu'aura la ligne
- * \param ligne Poiteur sur un tableau d'entier contenant l'état des cellules de la ligne
- * \param vieillissement Affiche ou non l'age des cellules
+ * \param cellWidth Largeur d'une cellule du tableau
  */
 void affiche_ligne(int c, double cellWidth);
 
@@ -100,7 +103,6 @@ void drawInputZone(char* input, char* error);
   */
 void affiche_trait(int c);
 
-// 
 /**
  * \fn void affiche_ligne(int c, int* ligne)
  * \brief Affichage d'une ligne de la grille
